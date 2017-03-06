@@ -6,9 +6,12 @@ use Disque\Client;
 use Disque\Connection\Credentials;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
+use RuntimeException;
 use Silex\Api\BootableProviderInterface;
 use Silex\Api\ControllerProviderInterface;
 use Silex\Application;
+use Twig_Loader_Filesystem;
+use Varspool\DisqueAdmin\Controller\BaseController;
 use Varspool\DisqueAdmin\Controller\OverviewController;
 use Varspool\DisqueAdmin\Controller\QueueController;
 
@@ -16,6 +19,10 @@ class DisqueAdminProvider implements ServiceProviderInterface, ControllerProvide
 {
     public function register(Container $pimple)
     {
+        if (!isset($pimple['twig'])) {
+            throw new RuntimeException(__CLASS__ . ' requires Twig provider to be registered');
+        }
+
         $pimple['disque_admin.mount_prefix'] = '/';
         $pimple['disque_admin.host'] = '127.0.0.1';
         $pimple['disque_admin.port'] = 7711;
@@ -51,15 +58,10 @@ class DisqueAdminProvider implements ServiceProviderInterface, ControllerProvide
 
         // Views
 
-        if (isset($pimple['twig'])) {
-            $pimple->extend('twig.loader.filesystem', function (\Twig_Loader_Filesystem $loader) {
-                $path = __DIR__ . '/../resources/views';
-                $a = realpath($path);
-
-                $loader->addPath($path, 'disque_admin');
-                return $loader;
-            });
-        }
+        $pimple->extend('twig.loader.filesystem', function (Twig_Loader_Filesystem $loader) {
+            $loader->addPath(__DIR__ . '/../resources/views', BaseController::TWIG_NAMESPACE);
+            return $loader;
+        });
     }
 
     public function connect(Application $app)

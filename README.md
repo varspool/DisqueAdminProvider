@@ -5,6 +5,7 @@ A web-based management/monitoring GUI for [Disque](https://github.com/antirez/di
 ## Dependencies
 
 * Silex 2
+* [Twig](TwigServiceProvider) support, with the twig bridge
 * [Service Controller](http://silex.sensiolabs.org/doc/2.0/providers/service_controller.html) support
 
 ## Installation
