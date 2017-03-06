@@ -1,0 +1,105 @@
+#!/bin/bash
+# Bash functions
+
+readonly CACHE_DIR=${WERCKER_CACHE_DIR:-build}
+
+readonly DISQUE_VERSION="1.0-rc1"
+readonly DISQUE_SOURCE_URL=https://github.com/antirez/disque/archive/${DISQUE_VERSION}.tar.gz
+readonly DISQUE_SOURCE_DOWNLOAD=${CACHE_DIR}/disque-${DISQUE_VERSION}.tar.gz
+readonly DISQUE_SOURCE_DIR=${CACHE_DIR}/disque-${DISQUE_VERSION}
+
+function ensureDisque() {
+    if ! hash disque > /dev/null 2>&1; then
+        if [[ "$OSTYPE" == "linux-gnu" ]]; then
+            if [[ $(lsb_release -si) == "Ubuntu" ]]; then
+                if dpkg --compare-versions $(lsb_release -rs) 'ge' '16.04'; then
+                    installPackage disque
+                else
+                    installFromSource
+                fi
+            else
+                installFromSource
+            fi
+        elif [[ "$OSTYPE" == "darwin"* ]]; then
+            brew tap colstrom/homebrew-disque
+            brew install colstrom/homebrew-disque/disque
+        fi
+    fi
+
+    if ! hash disque > /dev/null 2>&1; then
+        echo "Could not find or install disque" >&2
+        exit 2
+    fi
+}
+
+function ensureDisqueServer() {
+    if ! hash disque-server > /dev/null 2>&1; then
+        if [[ "$OSTYPE" == "linux-gnu" ]]; then
+            if [[ $(lsb_release -si) == "Ubuntu" ]]; then
+                if dpkg --compare-versions $(lsb_release -rs) 'ge' '16.04'; then
+                    #installPackage disque
+                    installFromSource # testing
+                else
+                    installFromSource
+                fi
+            else
+                installFromSource
+            fi
+        elif [[ "$OSTYPE" == "darwin"* ]]; then
+            brew tap colstrom/homebrew-disque
+            brew install colstrom/homebrew-disque/disque
+        fi
+    fi
+
+    if ! hash disque-server > /dev/null 2>&1; then
+        echo "Could not find disque-server" >&2
+        exit 2
+    fi
+}
+
+function installPackage() {
+    export DEBIAN_FRONTEND=noninteractive
+
+    if [[ $EUID -ne 0 ]]; then
+        sudo apt-get install -y "$@"
+    else
+        apt-get install -y "$@"
+    fi
+}
+
+function installFromSource() {
+    set -x
+
+    mkdir -p $(dirname $DISQUE_SOURCE_DIR)
+
+    if [[ ! -f $DISQUE_SOURCE_DOWNLOAD ]]; then
+        echo "Downloading disque source from $DISQUE_SOURCE_URL"
+        wget $DISQUE_SOURCE_URL -O $DISQUE_SOURCE_DOWNLOAD
+    fi
+
+    if [[ ! -d $DISQUE_SOURCE_DIR ]]; then
+        echo "Extracting Disque source from $DISQUE_SOURCE_DOWNLOAD"
+        tar zvxf $DISQUE_SOURCE_DOWNLOAD -C $(dirname $DISQUE_SOURCE_DIR)
+    fi
+
+    if [[ ! -x "$DISQUE_SOURCE_DIR/src/disque" ]]; then
+        echo "Running make"
+        pushd $DISQUE_SOURCE_DIR
+        ls -lah
+        make
+        popd
+    fi
+
+    if [[ ! -x /usr/local/bin/disque ]]; then
+        echo "Running make install"
+        pushd $DISQUE_SOURCE_DIR
+
+        if [[ $EUID -ne 0 ]]; then
+            sudo make install
+        else
+            make install
+        fi
+
+        popd
+    fi
+}

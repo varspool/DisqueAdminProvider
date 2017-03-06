@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+
+set -e
+set -o pipefail
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source $DIR/_common
+
+RUN_ID=$(date +%Y%m%d%H%M%S)
+BUILD_DIR="${DIR}/../build/${RUN_ID}"
+BIND=${DISQUE_HOST:-127.0.0.1}
+
+mkdir -p $BUILD_DIR
+
+readonly PORT_1=${DISQUE_PORT:-7711}
+readonly PORT_2=$(($PORT_1+1))
+readonly PORT_3=$(($PORT_1+2))
+
+$DIR/disque-server \
+    --port $PORT_1 \
+    --cluster-config-file $BUILD_DIR/nodes-$PORT_1.conf \
+    --bind ${BIND} > $BUILD_DIR/server.$RUN_ID.1.log 2>&1 &
+readonly SERVER_PID_1=$!
+
+$DIR/disque-server \
+    --port $PORT_2 \
+    --cluster-config-file $BUILD_DIR/nodes-$PORT_2.conf \
+    --bind ${BIND} > $BUILD_DIR/server.$RUN_ID.2.log 2>&1 &
+readonly SERVER_PID_2=$!
+
+$DIR/disque-server \
+    --port $PORT_3 \
+    --cluster-config-file $BUILD_DIR/nodes-$PORT_3.conf \
+    --bind ${BIND} > $BUILD_DIR/server.$RUN_ID.3.log 2>&1 &
+readonly SERVER_PID_3=$!
+
+function finish {
+  if [[ -n $SERVER_PID_1 ]]; then
+    kill $SERVER_PID_1 > /dev/null 2>&1 || true
+  fi
+  if [[ -n $SERVER_PID_2 ]]; then
+    kill $SERVER_PID_2 > /dev/null 2>&1 || true
+  fi
+  if [[ -n $SERVER_PID_3 ]]; then
+    kill $SERVER_PID_3 > /dev/null 2>&1 || true
+  fi
+}
+
+trap finish EXIT
+
+echo "Starting run $RUN_ID"
+echo "Started disque nodes on ports { $PORT_1, $PORT_2, $PORT_3 }"
+echo "Servers are { $SERVER_PID_1, $SERVER_PID_2, $SERVER_PID_3 }"
+
+sleep 1
+
+echo "Introducing..."
+$DIR/disque -p $PORT_1 cluster meet $BIND $PORT_2
+$DIR/disque -p $PORT_1 cluster meet $BIND $PORT_3
+
+$DIR/disque -p $PORT_2 cluster meet $BIND $PORT_1
+$DIR/disque -p $PORT_2 cluster meet $BIND $PORT_3
+
+$DIR/disque -p $PORT_3 cluster meet $BIND $PORT_1
+$DIR/disque -p $PORT_3 cluster meet $BIND $PORT_2
+
+echo "Adding jobs"
+$DIR/disque -h $BIND -p $PORT_1 ADDJOB test_queue_$RANDOM $RANDOM 10000 REPLICATE 1
+$DIR/disque -h $BIND -p $PORT_1 ADDJOB test_queue_$RANDOM $RANDOM 10000 REPLICATE 1
+$DIR/disque -h $BIND -p $PORT_1 ADDJOB test_queue_$RANDOM $RANDOM 10000 REPLICATE 1
+$DIR/disque -h $BIND -p $PORT_1 ADDJOB test_queue_$RANDOM $RANDOM 10000 REPLICATE 1
+
+echo "Waiting for ^C to exit"
+wait
