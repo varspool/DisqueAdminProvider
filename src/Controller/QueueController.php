@@ -9,7 +9,10 @@ class QueueController extends BaseController
 {
     public function indexAction(Request $request)
     {
-        return new Response('OK!');
-    }
+        $response = $this->disque->qscan(0, [
+            'busyloop' => true,
+        ]);
 
+        return $this->render('queue.html.twig');
+    }
 }
