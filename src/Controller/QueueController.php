@@ -11,8 +11,11 @@ class QueueController extends BaseController
     {
         $response = $this->disque->qscan(0, [
             'busyloop' => true,
+            'minlen' => 1,
         ]);
 
-        return $this->render('queue.html.twig');
+        return $this->render('queue.html.twig', [
+            'queues' => $response['queues']
+        ]);
     }
 }

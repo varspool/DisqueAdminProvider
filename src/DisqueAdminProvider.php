@@ -43,7 +43,9 @@ class DisqueAdminProvider implements ServiceProviderInterface, ControllerProvide
         };
 
         $pimple['disque_admin.client'] = function (Application $app) {
-            return new Client($app['disque_admin.credentials']);
+            $client = new Client($app['disque_admin.credentials']);
+            $client->connect();
+            return $client;
         };
 
         // Controllers
