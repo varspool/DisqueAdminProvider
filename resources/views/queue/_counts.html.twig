@@ -1,0 +1,26 @@
+<div class="row">
+    <div class="col-6 col-md4">
+        <h3>Queues</h3>
+
+        <table class="table">
+            <thead class="thead-inverse">
+            <tr>
+                <th>Name</th>
+                <th>Jobs</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for queue, count in queues %}
+                <tr>
+                    <td>
+                        <a href="{{ path('disque_admin_queue_show', { 'name': queue }) }}">
+                            {{ queue }}
+                        </a>
+                    </td>
+                    <td>{{ count }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

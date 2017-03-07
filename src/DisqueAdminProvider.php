@@ -73,8 +73,12 @@ class DisqueAdminProvider implements ServiceProviderInterface, ControllerProvide
         $controllers->get('/', 'disque_admin.controller.overview:indexAction')
             ->bind('disque_admin_overview_index');
 
-        $controllers->get('/queues', 'disque_admin.controller.queue:indexAction')
+        $controllers->get('/queue', 'disque_admin.controller.queue:indexAction')
             ->bind('disque_admin_queue_index');
+
+        $controllers->get('/queue/{name}', 'disque_admin.controller.queue:showAction')
+            ->bind('disque_admin_queue_show')
+            ->assert('name', '\S+');
 
         return $controllers;
     }

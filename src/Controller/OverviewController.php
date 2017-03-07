@@ -9,6 +9,6 @@ class OverviewController extends BaseController
 {
     public function indexAction(Request $request)
     {
-        return $this->render('overview.html.twig');
+        return $this->render('overview/index.html.twig');
     }
 }

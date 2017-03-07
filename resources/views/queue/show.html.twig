@@ -1,5 +1,6 @@
 {% extends '@disque_admin/layout.html.twig' %}
 {% block content %}
-    <h2>Overview</h2>
+    <h2>Queue: {name}</h2>
 
+    {{ dump(stat) }}
 {% endblock %}
