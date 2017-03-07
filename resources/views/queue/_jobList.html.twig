@@ -1,3 +1,6 @@
-{% for job in jobs %}
-    {{ dump(job) }}
-{% endfor %}
+
+<div class="list-group">
+    {% for job in jobs %}
+        {% include '@disque_admin/job/_jobListItem.html.twig' with {'job': job} %}
+    {% endfor %}
+</div>
