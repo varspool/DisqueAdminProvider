@@ -2,5 +2,7 @@
 {% block content %}
     <h2>Queues</h2>
 
-    {{ dump(queues) }}
+    {% if queues %}
+        {% include '@disque_admin/queue/_allStatTable.html.twig' with {'queues': queues, 'columns': columns} %}
+    {% endif %}
 {% endblock %}

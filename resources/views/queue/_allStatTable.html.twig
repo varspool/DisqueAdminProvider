@@ -1,0 +1,28 @@
+<table class="table">
+    <thead>
+        <tr>
+            {% for column in columns %}
+                <th>
+                    {{ column }}
+                </th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+    {% for name, stat in queues %}
+        <tr>
+            {% for name in columns %}
+                {% if name == "name" %}
+                    <th>
+                        <a href="{{ path('disque_admin_queue_show', {'name': stat[name]}) }}">
+                            {{ stat[name]  }}
+                        </a>
+                    </th>
+                {% else %}
+                    <td>{{ stat[name] | join(', ') }}</td>
+                {% endif %}
+            {% endfor %}
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

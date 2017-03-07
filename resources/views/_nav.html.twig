@@ -8,10 +8,10 @@
 
     <div class="collapse navbar-collapse" id="navbarsExampleDefault">
         <ul class="navbar-nav mr-auto">
-            <li class="nav-item {{ global.request.attributes.get('_route') == 'disque_admin_overview_index' ? 'active' : '' }}">
+            <li class="nav-item {{ global.request.attributes.get('_route') matches '/^disque_admin_overview/' ? 'active' : '' }}">
                 <a class="nav-link" href="{{ path('disque_admin_overview_index') }}">Overview</a>
             </li>
-            <li class="nav-item {{ global.request.attributes.get('_route') == 'disque_admin_queue_index' ? 'active' : '' }}">
+            <li class="nav-item {{ global.request.attributes.get('_route') matches '/^disque_admin_queue/' ? 'active' : '' }}">
                 <a class="nav-link" href="{{ path('disque_admin_queue_index') }}">Queues</a>
             </li>
         </ul>

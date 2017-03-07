@@ -21,6 +21,18 @@ class QueueController extends BaseController
 
         return $this->render('queue/index.html.twig', [
             'queues' => $queues,
+            'columns' => [
+                'name',
+                'len',
+                'age',
+                'idle',
+                'blocked',
+                'import-from',
+                'import-rate',
+                'jobs-in',
+                'jobs-out',
+                'pause'
+            ],
         ]);
     }
 
@@ -32,6 +44,7 @@ class QueueController extends BaseController
         return $this->render('queue/show.html.twig', [
             'name' => $name,
             'stat' => $stat,
+            'jobs' => $jobs,
         ]);
     }
 
