@@ -12,6 +12,7 @@ use Silex\Api\ControllerProviderInterface;
 use Silex\Application;
 use Twig_Loader_Filesystem;
 use Varspool\DisqueAdmin\Controller\BaseController;
+use Varspool\DisqueAdmin\Controller\JobController;
 use Varspool\DisqueAdmin\Controller\OverviewController;
 use Varspool\DisqueAdmin\Controller\QueueController;
 
@@ -58,6 +59,10 @@ class DisqueAdminProvider implements ServiceProviderInterface, ControllerProvide
             return new QueueController($app['disque_admin.client'], $app['twig']);
         };
 
+        $pimple['disque_admin.controller.job'] = function (Application $app) {
+            return new JobController($app['disque_admin.client'], $app['twig']);
+        };
+
         // Views
 
         $pimple->extend('twig.loader.filesystem', function (Twig_Loader_Filesystem $loader) {
@@ -70,8 +75,12 @@ class DisqueAdminProvider implements ServiceProviderInterface, ControllerProvide
     {
         $controllers = $app['controllers_factory'];
 
+        // Overview
+
         $controllers->get('/', 'disque_admin.controller.overview:indexAction')
             ->bind('disque_admin_overview_index');
+
+        // Queue
 
         $controllers->get('/queue', 'disque_admin.controller.queue:indexAction')
             ->bind('disque_admin_queue_index');
@@ -79,6 +88,15 @@ class DisqueAdminProvider implements ServiceProviderInterface, ControllerProvide
         $controllers->get('/queue/{name}', 'disque_admin.controller.queue:showAction')
             ->bind('disque_admin_queue_show')
             ->assert('name', '\S+');
+
+        // Job
+
+        $controllers->get('/job', 'disque_admin.controller.job:indexAction')
+            ->bind('disque_admin_job_index');
+
+        $controllers->get('/job/{id}', 'disque_admin.controller.job:showAction')
+            ->bind('disque_admin_job_show')
+            ->assert('id', 'D-\S+');
 
         return $controllers;
     }

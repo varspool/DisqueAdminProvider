@@ -14,6 +14,9 @@
             <li class="nav-item {{ global.request.attributes.get('_route') matches '/^disque_admin_queue/' ? 'active' : '' }}">
                 <a class="nav-link" href="{{ path('disque_admin_queue_index') }}">Queues</a>
             </li>
+            <li class="nav-item {{ global.request.attributes.get('_route') matches '/^disque_admin_job/' ? 'active' : '' }}">
+                <a class="nav-link" href="{{ path('disque_admin_job_index') }}">Jobs</a>
+            </li>
         </ul>
     </div>
 </nav>
