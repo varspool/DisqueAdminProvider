@@ -3,9 +3,12 @@
 namespace Varspool\DisqueAdmin\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
+use Varspool\DisqueAdmin\FormatTrait;
 
 class JobController extends BaseController
 {
+    use FormatTrait;
+
     protected $columns = [
         'id',
         'queue',
@@ -25,8 +28,11 @@ class JobController extends BaseController
 
     protected $format = [
         'ctime' => 'formatCTime',
-        'ttl' => 'formatInterval',
-        'retry' => 'formatInterval'
+        'ttl' => 'formatIntervalSeconds',
+        'retry' => 'formatIntervalSeconds',
+        'delay' => 'formatIntervalSeconds',
+        'next-requeue-within' => 'formatIntervalMillis',
+        'next-awake-within' => 'formatIntervalMillis',
     ];
 
     public function indexAction(Request $request)
@@ -103,7 +109,9 @@ class JobController extends BaseController
     protected function formatJob(array $job)
     {
         foreach ($job as $name => &$value) {
-            $a = 1;
+            if (!empty($this->format[$name])) {
+                $value = call_user_func([$this, $this->format[$name]], $value);
+            }
         }
 
         return $job;
