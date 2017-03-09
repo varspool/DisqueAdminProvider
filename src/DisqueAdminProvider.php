@@ -10,6 +10,8 @@ use RuntimeException;
 use Silex\Api\BootableProviderInterface;
 use Silex\Api\ControllerProviderInterface;
 use Silex\Application;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Twig_Loader_Filesystem;
 use Varspool\DisqueAdmin\Controller\BaseController;
 use Varspool\DisqueAdmin\Controller\JobController;
@@ -97,6 +99,10 @@ class DisqueAdminProvider implements ServiceProviderInterface, ControllerProvide
         $controllers->get('/job/{id}', 'disque_admin.controller.job:showAction')
             ->bind('disque_admin_job_show')
             ->assert('id', 'D-\S+');
+
+        $controllers->after(function (Request $request, Response $response) {
+            $response->headers->addCacheControlDirective('private');
+        });
 
         return $controllers;
     }
