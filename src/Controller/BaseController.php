@@ -7,8 +7,10 @@ use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
 use Silex\Application\TwigTrait;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\Routing\Generator\UrlGenerator;
 use Twig_Environment;
 
 abstract class BaseController implements LoggerAwareInterface
@@ -28,10 +30,16 @@ abstract class BaseController implements LoggerAwareInterface
      */
     protected $twig;
 
-    public function __construct(Client $disque, Twig_Environment $twig)
+    /**
+     * @var UrlGenerator
+     */
+    protected $url;
+
+    public function __construct(Client $disque, Twig_Environment $twig, UrlGenerator $url)
     {
         $this->disque = $disque;
         $this->twig = $twig;
+        $this->url = $url;
         $this->logger = new NullLogger();
     }
 
@@ -63,5 +71,10 @@ abstract class BaseController implements LoggerAwareInterface
         }
 
         return $response;
+    }
+
+    public function redirect(string $url, int $status = 301, array $headers = [])
+    {
+        return new RedirectResponse($url, $status, $headers);
     }
 }

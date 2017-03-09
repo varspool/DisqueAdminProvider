@@ -3,6 +3,37 @@
     <h2>Job: <code>{{ id }}</code></h2>
 
     <div class="row">
+        <div class="btn-toolbar col my-2" role="toolbar" aria-label="Job menu options">
+            <div class="btn-group mr-2" role="group" aria-label="Queue options">
+                {% if show['state'] != "queued" %}
+                    <form action="{{ path('disque_admin_job_enqueue', {'id': id}) }}" method="post">
+                        <button type="submit" class="btn btn-outline-success">
+                            <i class="fa fa-play" aria-hidden="true"></i>
+                            Enqueue
+                        </button>
+                    </form>
+                {% endif %}
+                {% if show['state'] == "queued" %}
+                    <form action="{{ path('disque_admin_job_dequeue', {'id': id}) }}" method="post">
+                        <button type="submit" class="btn btn-outline-warning">
+                            <i class="fa fa-eject" aria-hidden="true"></i>
+                            Dequeue
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+            <div class="btn-group mr-2" role="group" aria-label="Destructive options">
+                <form action="{{ path('disque_admin_job_delete', {'id': id}) }}" method="post">
+                    <button type="submit" class="btn btn-outline-danger">
+                        <i class="fa fa-trash" aria-hidden="true"></i>
+                        Delete Job
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
         <div class="col-md-4 push-md-8">
             <h4>Details</h4>
 

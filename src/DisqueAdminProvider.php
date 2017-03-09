@@ -20,6 +20,8 @@ use Varspool\DisqueAdmin\Controller\QueueController;
 
 class DisqueAdminProvider implements ServiceProviderInterface, ControllerProviderInterface, BootableProviderInterface
 {
+    public const ID_REGEX = 'D-\S+';
+
     public function register(Container $pimple)
     {
         if (!isset($pimple['twig'])) {
@@ -54,15 +56,15 @@ class DisqueAdminProvider implements ServiceProviderInterface, ControllerProvide
         // Controllers
 
         $pimple['disque_admin.controller.overview'] = function (Application $app) {
-            return new OverviewController($app['disque_admin.client'], $app['twig']);
+            return new OverviewController($app['disque_admin.client'], $app['twig'], $app['url_generator']);
         };
 
         $pimple['disque_admin.controller.queue'] = function (Application $app) {
-            return new QueueController($app['disque_admin.client'], $app['twig']);
+            return new QueueController($app['disque_admin.client'], $app['twig'], $app['url_generator']);
         };
 
         $pimple['disque_admin.controller.job'] = function (Application $app) {
-            return new JobController($app['disque_admin.client'], $app['twig']);
+            return new JobController($app['disque_admin.client'], $app['twig'], $app['url_generator']);
         };
 
         // Views
@@ -98,7 +100,20 @@ class DisqueAdminProvider implements ServiceProviderInterface, ControllerProvide
 
         $controllers->get('/job/{id}', 'disque_admin.controller.job:showAction')
             ->bind('disque_admin_job_show')
-            ->assert('id', 'D-\S+');
+            ->assert('id', self::ID_REGEX);
+
+        $controllers->post('/job/{id}/enqueue', 'disque_admin.controller.job:enqueueAction')
+            ->bind('disque_admin_job_enqueue')
+            ->assert('id', self::ID_REGEX);
+
+        $controllers->post('/job/{id}/dequeue', 'disque_admin.controller.job:dequeueAction')
+            ->bind('disque_admin_job_dequeue')
+            ->assert('id', self::ID_REGEX);
+
+        $controllers->match('/job/{id}/delete', 'disque_admin.controller.job:deleteAction')
+            ->method('POST|DELETE')
+            ->bind('disque_admin_job_delete')
+            ->assert('id', self::ID_REGEX);
 
         $controllers->after(function (Request $request, Response $response) {
             $response->headers->addCacheControlDirective('private');
