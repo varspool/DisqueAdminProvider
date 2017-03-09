@@ -43,8 +43,7 @@ class JobController extends BaseController
         return $this->render('job/show.html.twig', [
             'id' => $id,
             'show' => $show,
-            'body' => json_encode($body, JSON_PRETTY_PRINT)
+            'body' => json_encode(json_decode($body), JSON_PRETTY_PRINT)
         ]);
     }
-
 }
