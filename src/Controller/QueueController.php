@@ -3,9 +3,33 @@
 namespace Varspool\DisqueAdmin\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
+use Varspool\DisqueAdmin\FormatTrait;
 
 class QueueController extends BaseController
 {
+    use FormatTrait;
+
+    protected $columns = [
+        'name',
+        'len',
+        'age',
+        'idle',
+        'blocked',
+        'import-from',
+        'import-rate',
+        'jobs-in',
+        'jobs-out',
+        'pause',
+    ];
+
+    protected $format = [
+        'idle' => 'formatIntervalSeconds',
+        'age' => 'formatIntervalSeconds',
+        'len' => 'formatJobCount',
+        'jobs-in' => 'formatJobCount',
+        'jobs-out' => 'formatJobCount',
+    ];
+
     public function indexAction(Request $request)
     {
         $response = $this->disque->qscan(0, [
@@ -16,23 +40,12 @@ class QueueController extends BaseController
         $queues = [];
 
         foreach ($response['queues'] as $queue) {
-            $queues[$queue] = $this->disque->qstat($queue);
+            $queues[$queue] = $this->formatObject($this->disque->qstat($queue));
         }
 
         return $this->render('queue/index.html.twig', [
             'queues' => $queues,
-            'columns' => [
-                'name',
-                'len',
-                'age',
-                'idle',
-                'blocked',
-                'import-from',
-                'import-rate',
-                'jobs-in',
-                'jobs-out',
-                'pause'
-            ],
+            'columns' => $this->columns,
         ]);
     }
 
@@ -43,7 +56,7 @@ class QueueController extends BaseController
 
         return $this->render('queue/show.html.twig', [
             'name' => $name,
-            'stat' => $stat,
+            'stat' => $this->formatObject($stat),
             'jobs' => $jobs,
         ]);
     }

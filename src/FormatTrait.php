@@ -8,6 +8,16 @@ use DateTimeImmutable;
 
 trait FormatTrait
 {
+    public function formatJobCount(string $jobs): string
+    {
+        return number_format($jobs) . ' jobs';
+    }
+
+    public function formatCount(string $jobs): string
+    {
+        return number_format($jobs);
+    }
+
     public function formatIntervalSeconds(string $seconds): string
     {
         $d1 = new DateTimeImmutable();
@@ -22,8 +32,8 @@ trait FormatTrait
             return $interval->h . ' hour' . ($interval->h == 1 ? '' : 's');
         }
 
-        if ($interval->m) {
-            return $interval->m . ' minute' . ($interval->m == 1 ? '' : 's');
+        if ($interval->i) {
+            return $interval->i . ' minute' . ($interval->i == 1 ? '' : 's');
         }
 
         return $seconds . ' seconds';
@@ -37,5 +47,16 @@ trait FormatTrait
     public function formatCTime(string $ctime): string
     {
         return date(DATE_ISO8601, (int)((int)$ctime / 1000000000));
+    }
+
+    protected function formatObject(array $job)
+    {
+        foreach ($job as $name => &$value) {
+            if (!empty($this->format[$name])) {
+                $value = call_user_func([$this, $this->format[$name]], $value);
+            }
+        }
+
+        return $job;
     }
 }

@@ -27,6 +27,8 @@ class JobController extends BaseController
     ];
 
     protected $format = [
+        'nacks' => 'formatCount',
+        'additional-deliveries' => 'formatCount',
         'ctime' => 'formatCTime',
         'ttl' => 'formatIntervalSeconds',
         'retry' => 'formatIntervalSeconds',
@@ -42,7 +44,7 @@ class JobController extends BaseController
             'reply' => 'all',
         ]);
 
-        $jobs = array_map([$this, 'formatJob'], $response['jobs']);
+        $jobs = array_map([$this, 'formatObject'], $response['jobs']);
 
         return $this->render('job/index.html.twig', [
             'jobs' => $jobs,
@@ -55,7 +57,7 @@ class JobController extends BaseController
         $show = $this->disque->show($id);
 
         if ($show) {
-            $show = $this->formatJob($show);
+            $show = $this->formatObject($show);
 
             $body = $show['body'];
             unset($show['body']);
@@ -104,16 +106,5 @@ class JobController extends BaseController
     {
         $this->disque->delJob($id);
         return $this->redirect($this->url->generate('disque_admin_job_index'));
-    }
-
-    protected function formatJob(array $job)
-    {
-        foreach ($job as $name => &$value) {
-            if (!empty($this->format[$name])) {
-                $value = call_user_func([$this, $this->format[$name]], $value);
-            }
-        }
-
-        return $job;
     }
 }
