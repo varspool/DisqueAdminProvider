@@ -1,0 +1,24 @@
+<table class="table">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Host</th>
+        <th>Port</th>
+        <th>Priority</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for node in hello.nodes %}
+        <tr class="{{ hello.id == node.id ? 'table-success' : '' }}">
+            <th scope="row">
+                <a href="{{ path('disque_admin_node_show', {id: node.id}) }}">
+                    {{ node.id }}
+                </a>
+            </th>
+            <td>{{ node.host }}</td>
+            <td>{{ node.port }}</td>
+            <td>{{ node.priority }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

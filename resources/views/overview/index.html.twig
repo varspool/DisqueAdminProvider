@@ -2,6 +2,17 @@
 {% block content %}
     <h2>Overview</h2>
 
-    {{ render(controller('disque_admin.controller.queue:countsComponent', {prefix: prefix})) }}
-    {{ render(controller('disque_admin.controller.overview:nodesComponent', {prefix: prefix})) }}
+    <div class="row">
+        <div class="col-6 col-md4">
+            <h3>Queues</h3>
+            {{ render(controller('disque_admin.controller.queue:countsComponent', {prefix: prefix})) }}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-6 col-md4">
+            <h3>Nodes</h3>
+            {{ render(controller('disque_admin.controller.node:tableComponent', {prefix: prefix})) }}
+        </div>
+    </div>
 {% endblock %}

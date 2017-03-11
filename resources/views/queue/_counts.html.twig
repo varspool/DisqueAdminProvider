@@ -1,32 +1,26 @@
-<div class="row">
-    <div class="col-6 col-md4">
-        <h3>Queues</h3>
-
-        {% if not queues %}
-            <p>
-                There are currently no queues with jobs. Refresh the page in a bit.
-            </p>
-        {% else %}
-            <table class="table">
-                <thead class="thead-inverse">
-                <tr>
-                    <th>Name</th>
-                    <th>Jobs</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for queue, count in queues %}
-                    <tr>
-                        <th scope="row">
-                            <a href="{{ path('disque_admin_queue_show', { 'name': queue, 'prefix': prefix }) }}">
-                                {{ queue }}
-                            </a>
-                        </th>
-                        <td>{{ count }}</td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        {% endif %}
-    </div>
-</div>
+{% if not queues %}
+    <p>
+        There are currently no queues with jobs. Refresh the page in a bit.
+    </p>
+{% else %}
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Jobs</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for queue, count in queues %}
+            <tr>
+                <th scope="row">
+                    <a href="{{ path('disque_admin_queue_show', { 'name': queue, 'prefix': prefix }) }}">
+                        {{ queue }}
+                    </a>
+                </th>
+                <td>{{ count }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endif %}

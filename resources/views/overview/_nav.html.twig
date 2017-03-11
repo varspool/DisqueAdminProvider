@@ -4,7 +4,7 @@
             aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
-    <a class="navbar-brand" href="{{ path('disque_admin_overview_index', {'prefix': prefix}) }}">
+    <a class="navbar-brand" href="{{ path('disque_admin_overview_index', {prefix: prefix}) }}">
         <img src="{{ app['disque_admin.mount_prefix'] }}/logo.svg" width="30" height="30" alt=""
              class="d-inline-block align-top">
         Disque Admin
@@ -14,6 +14,9 @@
         <ul class="navbar-nav mr-auto">
             <li class="nav-item {{ route matches '/^disque_admin_overview/' ? 'active' : '' }}">
                 <a class="nav-link" href="{{ path('disque_admin_overview_index', {'prefix': prefix}) }}">Overview</a>
+            </li>
+            <li class="nav-item {{ route matches '/^disque_admin_node/' ? 'active' : '' }}">
+                <a class="nav-link" href="{{ path('disque_admin_node_index', {'prefix': prefix}) }}">Nodes</a>
             </li>
             <li class="nav-item {{ route matches '/^disque_admin_queue/' ? 'active' : '' }}">
                 <a class="nav-link" href="{{ path('disque_admin_queue_index', {'prefix': prefix}) }}">Queues</a>

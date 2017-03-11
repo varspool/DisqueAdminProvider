@@ -17,12 +17,14 @@ use Varspool\DisqueAdmin\Connection\Manager;
 use Varspool\DisqueAdmin\Connection\NodePrioritizer;
 use Varspool\DisqueAdmin\Controller\BaseController;
 use Varspool\DisqueAdmin\Controller\JobController;
+use Varspool\DisqueAdmin\Controller\NodeController;
 use Varspool\DisqueAdmin\Controller\OverviewController;
 use Varspool\DisqueAdmin\Controller\QueueController;
 
 class DisqueAdminProvider implements ServiceProviderInterface, ControllerProviderInterface, BootableProviderInterface
 {
     public const ID_REGEX = 'D-\S+';
+    private const PREFIX_REGEX = '^(\*|[0-9a-f]{8})$';
 
     public function register(Container $pimple)
     {
@@ -65,6 +67,10 @@ class DisqueAdminProvider implements ServiceProviderInterface, ControllerProvide
 
         // Controllers
 
+        $pimple['disque_admin.controller.node'] = function (Application $app) {
+            return new NodeController($app['disque_admin.client'], $app['twig'], $app['url_generator']);
+        };
+
         $pimple['disque_admin.controller.overview'] = function (Application $app) {
             return new OverviewController($app['disque_admin.client'], $app['twig'], $app['url_generator']);
         };
@@ -91,12 +97,25 @@ class DisqueAdminProvider implements ServiceProviderInterface, ControllerProvide
 
         // Overview
 
-        $controllers->get('/', 'disque_admin.controller.overview:indexAction')
-            ->bind('disque_admin_overview_index');
+        $controllers->get('/{prefix}/', 'disque_admin.controller.overview:indexAction')
+            ->bind('disque_admin_overview_index')
+            ->assert('prefix', self::PREFIX_REGEX)
+            ->value('prefix', '*')
+            ->convert('prefix', function ($v) { return $v === '*' ? null : $v; });
+
+        // Node
+
+        $controllers->get('/{prefix}/node', 'disque_admin.controller.node:indexAction')
+            ->bind('disque_admin_node_index');
+
+        $controllers->get('/{prefix}/{id}/node', 'disque_admin.controller.node:showAction')
+            ->bind('disque_admin_node_show')
+            ->value('prefix', '*')
+            ->convert('prefix', function ($v) { return $v === '*' ? null : $v; });
 
         // Queue
 
-        $controllers->get('/queue', 'disque_admin.controller.queue:indexAction')
+        $controllers->get('/{prefix}/queue', 'disque_admin.controller.queue:indexAction')
             ->bind('disque_admin_queue_index');
 
         $controllers->get('/queue/{name}', 'disque_admin.controller.queue:showAction')
@@ -105,11 +124,12 @@ class DisqueAdminProvider implements ServiceProviderInterface, ControllerProvide
 
         // Job
 
-        $controllers->get('/job', 'disque_admin.controller.job:indexAction')
+        $controllers->get('/{prefix}/job', 'disque_admin.controller.job:indexAction')
             ->bind('disque_admin_job_index');
 
-        $controllers->get('/job/{id}', 'disque_admin.controller.job:showAction')
+        $controllers->get('/{prefix}/job/{id}', 'disque_admin.controller.job:showAction')
             ->bind('disque_admin_job_show')
+            ->assert('prefix', self::PREFIX_REGEX)
             ->assert('id', self::ID_REGEX);
 
         $controllers->post('/job/{id}/enqueue', 'disque_admin.controller.job:enqueueAction')

@@ -26,15 +26,21 @@ class NodePrioritizer implements NodePrioritizerInterface
      */
     private $null;
 
+    /**
+     * @var bool
+     */
+    private $throwNotFound = true;
+
     public function __construct()
     {
         $this->random = new RandomPrioritizer();
         $this->null = new NullPrioritizer();
     }
 
-    public function setPrefix(string $prefix)
+    public function setPrefix(string $prefix, bool $throwNotFound = true)
     {
         $this->prefix = $prefix;
+        $this->throwNotFound = $throwNotFound;
     }
 
     public function sort(array $nodes, $currentNodeId)
@@ -52,7 +58,11 @@ class NodePrioritizer implements NodePrioritizerInterface
         }, ARRAY_FILTER_USE_KEY);
 
         if (empty($filtered)) {
-            return $this->random->sort($nodes, $currentNodeId);
+            if ($this->throwNotFound) {
+                throw new NodeNotFoundException('Could not find ' . $this->prefix);
+            } else {
+                return $this->random->sort($nodes, $currentNodeId);
+            }
         }
 
         return $filtered;
