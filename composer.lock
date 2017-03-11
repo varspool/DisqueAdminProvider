@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "eb559b5886759a0b83b3244428dfe01f",
+    "content-hash": "ac8564183582cfd61d98637b489c4d58",
     "packages": [
         {
             "name": "mariano/disque-php",
-            "version": "2.0.3",
+            "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/mariano/disque-php.git",
-                "reference": "33dcf6f59e7b39b76205dfc881dd7674731f01c2"
+                "url": "https://github.com/dominics/disque-php.git",
+                "reference": "0246ef92eb49f904eb62a61bd19432f8108dd208"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mariano/disque-php/zipball/33dcf6f59e7b39b76205dfc881dd7674731f01c2",
-                "reference": "33dcf6f59e7b39b76205dfc881dd7674731f01c2",
+                "url": "https://api.github.com/repos/dominics/disque-php/zipball/0246ef92eb49f904eb62a61bd19432f8108dd208",
+                "reference": "0246ef92eb49f904eb62a61bd19432f8108dd208",
                 "shasum": ""
             },
             "require": {
@@ -34,7 +34,11 @@
                     "Disque\\": "src/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "Disque\\Test\\": "tests/"
+                }
+            },
             "license": [
                 "MIT"
             ],
@@ -52,7 +56,12 @@
                 "job",
                 "queue"
             ],
-            "time": "2017-02-16T22:49:19+00:00"
+            "support": {
+                "email": "mgiglesias@gmail.com",
+                "issues": "https://github.com/mariano/disque-php/issues",
+                "source": "https://github.com/mariano/disque-php"
+            },
+            "time": "2017-03-11 14:05:55"
         },
         {
             "name": "pimple/pimple",
@@ -2244,9 +2253,18 @@
             "time": "2016-11-23T20:04:58+00:00"
         }
     ],
-    "aliases": [],
+    "aliases": [
+        {
+            "alias": "3.0.x-dev",
+            "alias_normalized": "3.0.9999999.9999999-dev",
+            "version": "9999999-dev",
+            "package": "mariano/disque-php"
+        }
+    ],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "mariano/disque-php": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],

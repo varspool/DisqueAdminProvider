@@ -4,7 +4,7 @@
     "type": "library",
     "require": {
         "silex/silex": "~2.0",
-        "mariano/disque-php": "~2.0",
+        "mariano/disque-php": "dev-master as 3.0.x-dev",
         "symfony/twig-bridge": "*",
         "psr/log": "~1.0"
     },
@@ -31,5 +31,11 @@
         "branch-alias": {
             "dev-master": "0.0.x-dev"
         }
-    }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "git@github.com:dominics/disque-php.git"
+        }
+    ]
 }
