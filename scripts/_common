@@ -98,7 +98,12 @@ function installFromSource() {
         pushd $DISQUE_SOURCE_DIR
 
         if [[ $EUID -ne 0 ]]; then
-            sudo make install
+            if [[ $TRAVIS == "true" ]]; then
+                mkdir -p /home/travis/opt/
+                PREFIX=/home/travis/opt/ make install
+            else
+                sudo make install
+            fi
         else
             make install
         fi
