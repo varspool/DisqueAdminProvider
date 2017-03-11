@@ -1,20 +1,20 @@
 <nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse fixed-top">
     <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
-            data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false"
+            data-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false"
             aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
     <a class="navbar-brand" href="#">Disque Admin</a>
 
-    <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+    <div class="collapse navbar-collapse" id="navbarMain">
         <ul class="navbar-nav mr-auto">
-            <li class="nav-item {{ global.request.attributes.get('_route') matches '/^disque_admin_overview/' ? 'active' : '' }}">
+            <li class="nav-item {{ route matches '/^disque_admin_overview/' ? 'active' : '' }}">
                 <a class="nav-link" href="{{ path('disque_admin_overview_index') }}">Overview</a>
             </li>
-            <li class="nav-item {{ global.request.attributes.get('_route') matches '/^disque_admin_queue/' ? 'active' : '' }}">
+            <li class="nav-item {{ route matches '/^disque_admin_queue/' ? 'active' : '' }}">
                 <a class="nav-link" href="{{ path('disque_admin_queue_index') }}">Queues</a>
             </li>
-            <li class="nav-item {{ global.request.attributes.get('_route') matches '/^disque_admin_job/' ? 'active' : '' }}">
+            <li class="nav-item {{ route matches '/^disque_admin_job/' ? 'active' : '' }}">
                 <a class="nav-link" href="{{ path('disque_admin_job_index') }}">Jobs</a>
             </li>
         </ul>

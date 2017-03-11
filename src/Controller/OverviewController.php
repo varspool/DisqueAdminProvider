@@ -11,4 +11,14 @@ class OverviewController extends BaseController
     {
         return $this->render('overview/index.html.twig');
     }
+
+    public function navComponent(string $route, Request $request)
+    {
+        $node = $this->disque->getConnectionManager()->getCurrentNode();
+
+        return $this->render('_nav.html.twig', [
+            'route' => $route,
+            'node' => $node,
+        ]);
+    }
 }

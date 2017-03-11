@@ -31,7 +31,7 @@
 </head>
 <body>
 
-{% include '@disque_admin/_nav.html.twig' %}
+{{ render(controller('disque_admin.controller.overview:navComponent', {route: global.request.attributes.get('_route')})) }}
 
 <div class="container-fluid">
     {% block content %}{% endblock %}
