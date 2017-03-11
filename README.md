@@ -37,3 +37,8 @@ A web-based management/monitoring GUI for [Disque](https://github.com/antirez/di
 
 To pass multiple connections, extend the `disque_admin.credentials` service, and return
 and array of `Disque\Connection\Credentials` instances.
+
+## Screenshots
+
+* ![Queue view](docs/screenshots/queue-show.png)
+* ![Job view](docs/screenshots/job-show.png)
