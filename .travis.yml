@@ -1,11 +1,10 @@
-sudo: required
 language: php
 php: '7.1'
+
+before_install:
+   - scripts/install
 install:
    - composer install
-before_script:
-   - scripts/harness &
-   - scripts/disque INFO
 addons:
   apt:
     packages:
