@@ -3,9 +3,11 @@ language: php
 php: '7.1'
 install:
    - composer install
+before_script:
    - scripts/harness &
    - scripts/disque INFO
 addons:
   apt:
     packages:
       - build-essential
+      - tcl8.5
