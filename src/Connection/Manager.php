@@ -8,7 +8,7 @@ class Manager extends BaseManager
 {
     private $prefix;
 
-    public function setPrefix(string $prefix)
+    public function setPrefix(string $prefix): void
     {
         $this->prefix = $prefix;
 
@@ -17,6 +17,11 @@ class Manager extends BaseManager
         if ($strategy instanceof NodePrioritizer) {
             $strategy->setPrefix($prefix);
         }
+    }
+
+    public function getPrefix(): string
+    {
+        return substr(parent::getCurrentNode()->getId(), 0, 8);
     }
 
     protected function findAvailableConnection()

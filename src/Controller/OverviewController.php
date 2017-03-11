@@ -10,7 +10,7 @@ class OverviewController extends BaseController
     public function indexAction(Request $request)
     {
         return $this->render('overview/index.html.twig', [
-            'prefix' => $request->query->get('prefix')
+            'prefix' => $request->get('prefix')
         ]);
     }
 
@@ -25,12 +25,14 @@ class OverviewController extends BaseController
 
         return $this->render('overview/_nodes.html.twig', [
             'hello' => $hello,
-            'prefix' => $request->query->get('prefix')
+            'prefix' => $request->get('prefix')
         ]);
     }
 
-    public function navComponent(string $route, ?string $prefix, Request $request)
+    public function navComponent(string $route, Request $request)
     {
+        $prefix = $this->disque->getConnectionManager()->getPrefix();
+
         return $this->render('overview/_nav.html.twig', [
             'route' => $route,
             'prefix' => $prefix
