@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 set -e
+set -x
 set -o pipefail
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -35,6 +36,34 @@ $DIR/disque-server \
 readonly SERVER_PID_3=$!
 
 function finish {
+  set +e
+  echo "Shutting down..." >&2
+
+  echo "Setting custer leaving state..." >&2
+
+  echo "CLUSTER LEAVING yes" | $DIR/disque -h $BIND -p $PORT_1
+  echo "CLUSTER LEAVING yes" | $DIR/disque -h $BIND -p $PORT_2
+  echo "CLUSTER LEAVING yes" | $DIR/disque -h $BIND -p $PORT_3
+
+  echo "Waiting a bit..." >&2
+
+  sleep 5
+
+  echo "Running forget across nodes..." >&2
+
+  RUN_ID_1=$(disque -h $BIND -p $PORT_1 info | grep run_id | cut -d : -f 2)
+  RUN_ID_2=$(disque -h $BIND -p $PORT_2 info | grep run_id | cut -d : -f 2)
+  RUN_ID_3=$(disque -h $BIND -p $PORT_3 info | grep run_id | cut -d : -f 2)
+
+  echo "CLUSTER FORGET $RUN_ID_1" | $DIR/disque -h $BIND -p $PORT_2
+  echo "CLUSTER FORGET $RUN_ID_1" | $DIR/disque -h $BIND -p $PORT_3
+  echo "CLUSTER FORGET $RUN_ID_2" | $DIR/disque -h $BIND -p $PORT_1
+  echo "CLUSTER FORGET $RUN_ID_2" | $DIR/disque -h $BIND -p $PORT_3
+  echo "CLUSTER FORGET $RUN_ID_3" | $DIR/disque -h $BIND -p $PORT_1
+  echo "CLUSTER FORGET $RUN_ID_3" | $DIR/disque -h $BIND -p $PORT_2
+
+  echo "Killing PIDs..." >&2
+
   if [[ -n $SERVER_PID_1 ]]; then
     kill $SERVER_PID_1 > /dev/null 2>&1 || true
   fi
@@ -44,6 +73,8 @@ function finish {
   if [[ -n $SERVER_PID_3 ]]; then
     kill $SERVER_PID_3 > /dev/null 2>&1 || true
   fi
+
+  echo "Done shutting down." >&2
 }
 
 trap finish EXIT
@@ -64,11 +95,18 @@ $DIR/disque -p $PORT_2 cluster meet $BIND $PORT_3
 $DIR/disque -p $PORT_3 cluster meet $BIND $PORT_1
 $DIR/disque -p $PORT_3 cluster meet $BIND $PORT_2
 
-echo "Adding jobs"
-$DIR/disque -h $BIND -p $PORT_1 ADDJOB test_queue_$RANDOM $RANDOM 10000 REPLICATE 1
-$DIR/disque -h $BIND -p $PORT_1 ADDJOB test_queue_$RANDOM $RANDOM 10000 REPLICATE 1
-$DIR/disque -h $BIND -p $PORT_1 ADDJOB test_queue_$RANDOM $RANDOM 10000 REPLICATE 1
-$DIR/disque -h $BIND -p $PORT_1 ADDJOB test_queue_$RANDOM $RANDOM 10000 REPLICATE 1
+set +e
 
-echo "Waiting for ^C to exit"
+TEST_QUEUE="test_queue_$RANDOM"
+TEST_JOB="{\"some\":\"job-$RANDOM\"}"
+
+while true; do
+    echo "Adding jobs to all 3 running nodes"
+    $DIR/disque -h $BIND -p $PORT_1 ADDJOB ${TEST_QUEUE} ${TEST_JOB} 10000
+    $DIR/disque -h $BIND -p $PORT_2 ADDJOB ${TEST_QUEUE} ${TEST_JOB} 10000
+    $DIR/disque -h $BIND -p $PORT_3 ADDJOB ${TEST_QUEUE} ${TEST_JOB} 10000
+
+    sleep 5
+done
+
 wait
