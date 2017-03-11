@@ -86,9 +86,9 @@ function installFromSource() {
         echo "Running make"
         pushd $DISQUE_SOURCE_DIR
         make distclean
-        pushd deps
-        make hiredis jemalloc linenoise
-        popd ../
+#        pushd deps
+#        make hiredis jemalloc linenoise
+#        popd
         make
         popd
     fi
