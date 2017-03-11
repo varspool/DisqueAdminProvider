@@ -85,7 +85,9 @@ function installFromSource() {
     if [[ ! -x "$DISQUE_SOURCE_DIR/src/disque" ]]; then
         echo "Running make"
         pushd $DISQUE_SOURCE_DIR
-        ls -lah
+        cd deps
+        make hiredis jemalloc linenoise
+        cd ../
         make
         popd
     fi
