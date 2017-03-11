@@ -1,7 +1,7 @@
 <table class="table table-sm">
     {% for name, value in stat %}
         <tr>
-            <th>{{ name }}</th>
+            <th scope="row">{{ name }}</th>
             <td>{{ value | join(', ') }}</td>
         </tr>
     {% endfor %}

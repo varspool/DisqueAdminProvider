@@ -1,7 +1,7 @@
 <table class="table table-sm">
     {% for name, value in show %}
         <tr>
-            <th>{{ name }}</th>
+            <th scope="row">{{ name }}</th>
             <td>{{ value | join(', ') }}</td>
         </tr>
     {% endfor %}

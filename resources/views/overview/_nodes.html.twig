@@ -13,10 +13,10 @@
             </thead>
             <tbody>
             {% for node in hello.nodes %}
-                <tr>
-                    <td>
+                <tr class="{{ hello.id == node.id ? 'table-success' : '' }}">
+                    <th scope="row">
                         {{ node.id }}
-                    </td>
+                    </th>
                     <td>{{ node.host }}</td>
                     <td>{{ node.port }}</td>
                     <td>{{ node.priority }}</td>
