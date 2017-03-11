@@ -3,6 +3,9 @@ dist: xenial
 php:
   - '7.1'
   - hhvm
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get install -y disque
 install:
    - composer install
-   - scripts/harness
+   - scripts/disque
