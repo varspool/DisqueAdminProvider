@@ -1,6 +1,6 @@
 <?php
 
-namespace Varspool\DisqueAdmin;
+namespace Varspool\DisqueAdmin\Overview;
 
 use Varspool\DisqueAdmin\Test\WebTestCase;
 

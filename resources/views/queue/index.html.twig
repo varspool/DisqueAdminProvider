@@ -3,6 +3,6 @@
     <h2>Queues</h2>
 
     {% if queues %}
-        {% include '@disque_admin/queue/_allStatTable.html.twig' with {'queues': queues, 'columns': columns} %}
+        {% include '@disque_admin/queue/_allStatTable.html.twig' with {'queues': queues, 'columns': columns, prefix: prefix} %}
     {% endif %}
 {% endblock %}

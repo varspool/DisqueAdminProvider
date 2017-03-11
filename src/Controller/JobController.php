@@ -3,12 +3,9 @@
 namespace Varspool\DisqueAdmin\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
-use Varspool\DisqueAdmin\FormatTrait;
 
 class JobController extends BaseController
 {
-    use FormatTrait;
-
     protected $columns = [
         'id',
         'queue',
@@ -49,6 +46,7 @@ class JobController extends BaseController
         return $this->render('job/index.html.twig', [
             'jobs' => $jobs,
             'columns' => $this->columns,
+            'prefix' => $request->query->get('prefix')
         ]);
     }
 
@@ -69,6 +67,7 @@ class JobController extends BaseController
             'id' => $id,
             'show' => $show,
             'body' => json_encode(json_decode($body), JSON_PRETTY_PRINT),
+            'prefix' => $request->query->get('prefix')
         ]);
     }
 

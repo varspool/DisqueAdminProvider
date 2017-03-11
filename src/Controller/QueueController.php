@@ -3,12 +3,9 @@
 namespace Varspool\DisqueAdmin\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
-use Varspool\DisqueAdmin\FormatTrait;
 
 class QueueController extends BaseController
 {
-    use FormatTrait;
-
     protected $columns = [
         'name',
         'len',
@@ -46,6 +43,7 @@ class QueueController extends BaseController
         return $this->render('queue/index.html.twig', [
             'queues' => $queues,
             'columns' => $this->columns,
+            'prefix' => $request->query->get('prefix')
         ]);
     }
 
@@ -58,10 +56,11 @@ class QueueController extends BaseController
             'name' => $name,
             'stat' => $this->formatObject($stat),
             'jobs' => $jobs,
+            'prefix' => $request->query->get('prefix')
         ]);
     }
 
-    public function countsComponent(Request $request)
+    public function countsComponent(?string $prefix, Request $request)
     {
         $response = $this->disque->qscan(0, [
             'busyloop' => true,
@@ -76,6 +75,7 @@ class QueueController extends BaseController
 
         return $this->render('queue/_counts.html.twig', [
             'queues' => $queues,
+            'prefix' => $prefix
         ]);
     }
 }

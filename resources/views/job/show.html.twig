@@ -6,15 +6,15 @@
         <div class="btn-toolbar col my-2" role="toolbar" aria-label="Job menu options">
             <div class="btn-group mr-2" role="group" aria-label="Queue options">
                 {% if show['state'] != "queued" %}
-                    <form action="{{ path('disque_admin_job_enqueue', {'id': id}) }}" method="post">
-                        <button type="submit" class="btn btn-outline-success">
+                    <form action="{{ path('disque_admin_job_enqueue', {'id': id, 'prefix': prefix}) }}" method="post">
+                        <button type="submit" class="btn btn-outline-warning">
                             <i class="fa fa-play" aria-hidden="true"></i>
                             Enqueue
                         </button>
                     </form>
                 {% endif %}
                 {% if show['state'] == "queued" %}
-                    <form action="{{ path('disque_admin_job_dequeue', {'id': id}) }}" method="post">
+                    <form action="{{ path('disque_admin_job_dequeue', {'id': id, prefix: prefix}) }}" method="post">
                         <button type="submit" class="btn btn-outline-warning">
                             <i class="fa fa-eject" aria-hidden="true"></i>
                             Dequeue
@@ -37,7 +37,7 @@
         <div class="col-md-4 push-md-8">
             <h4>Details</h4>
 
-            {% include '@disque_admin/job/_showTable.html.twig' with { 'show': show } %}
+            {% include '@disque_admin/job/_showTable.html.twig' with { 'show': show, 'prefix': prefix } %}
         </div>
 
         <div class="col-md-8 pull-md-4">

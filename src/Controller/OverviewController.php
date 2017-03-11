@@ -4,18 +4,20 @@ namespace Varspool\DisqueAdmin\Controller;
 
 use Disque\Connection\Node\Node;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 class OverviewController extends BaseController
 {
     public function indexAction(Request $request)
     {
-        return $this->render('overview/index.html.twig');
+        return $this->render('overview/index.html.twig', [
+            'prefix' => $request->query->get('prefix')
+        ]);
     }
 
     public function nodesComponent(Request $request)
     {
         $node = $this->disque->getConnectionManager()->getCurrentNode();
+
         /**
          * @var Node $node
          */
@@ -23,16 +25,25 @@ class OverviewController extends BaseController
 
         return $this->render('overview/_nodes.html.twig', [
             'hello' => $hello,
+            'prefix' => $request->query->get('prefix')
         ]);
     }
 
-    public function navComponent(string $route, Request $request)
+    public function navComponent(string $route, ?string $prefix, Request $request)
+    {
+        return $this->render('overview/_nav.html.twig', [
+            'route' => $route,
+            'prefix' => $prefix
+        ]);
+    }
+
+    public function prefixComponent(?string $prefix, Request $request)
     {
         $node = $this->disque->getConnectionManager()->getCurrentNode();
 
-        return $this->render('_nav.html.twig', [
-            'route' => $route,
+        return $this->render('overview/_prefix.html.twig', [
             'node' => $node,
+            'prefix' => $prefix
         ]);
     }
 }

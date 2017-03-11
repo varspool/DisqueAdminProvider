@@ -3,7 +3,6 @@
 namespace Varspool\DisqueAdmin;
 
 use DateInterval;
-use DateTime;
 use DateTimeImmutable;
 
 trait FormatTrait

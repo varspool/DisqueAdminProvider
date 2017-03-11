@@ -31,7 +31,7 @@
 </head>
 <body>
 
-{{ render(controller('disque_admin.controller.overview:navComponent', {route: global.request.attributes.get('_route')})) }}
+{{ render(controller('disque_admin.controller.overview:navComponent', {route: global.request.attributes.get('_route'), prefix: global.request.query.get('prefix')})) }}
 
 <div class="container-fluid">
     {% block content %}{% endblock %}

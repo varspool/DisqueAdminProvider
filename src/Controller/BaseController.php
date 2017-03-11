@@ -12,9 +12,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Generator\UrlGenerator;
 use Twig_Environment;
+use Varspool\DisqueAdmin\FormatTrait;
 
 abstract class BaseController implements LoggerAwareInterface
 {
+    use FormatTrait;
     use LoggerAwareTrait;
     use TwigTrait;
 

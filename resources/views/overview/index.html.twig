@@ -2,6 +2,6 @@
 {% block content %}
     <h2>Overview</h2>
 
-    {{ render(controller('disque_admin.controller.queue:countsComponent')) }}
-    {{ render(controller('disque_admin.controller.overview:nodesComponent')) }}
+    {{ render(controller('disque_admin.controller.queue:countsComponent', {prefix: prefix})) }}
+    {{ render(controller('disque_admin.controller.overview:nodesComponent', {prefix: prefix})) }}
 {% endblock %}

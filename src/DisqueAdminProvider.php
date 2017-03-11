@@ -13,6 +13,8 @@ use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Twig_Loader_Filesystem;
+use Varspool\DisqueAdmin\Connection\Manager;
+use Varspool\DisqueAdmin\Connection\NodePrioritizer;
 use Varspool\DisqueAdmin\Controller\BaseController;
 use Varspool\DisqueAdmin\Controller\JobController;
 use Varspool\DisqueAdmin\Controller\OverviewController;
@@ -49,8 +51,16 @@ class DisqueAdminProvider implements ServiceProviderInterface, ControllerProvide
 
         $pimple['disque_admin.client'] = function (Application $app) {
             $client = new Client($app['disque_admin.credentials']);
-            $client->connect();
+            $client->setConnectionManager($app['disque_admin.connection_manager']);
+//            $client->connect();
+
             return $client;
+        };
+
+        $pimple['disque_admin.connection_manager'] = function (Application $app) {
+            $manager = new Manager();
+            $manager->setPriorityStrategy(new NodePrioritizer());
+            return $manager;
         };
 
         // Controllers
@@ -114,6 +124,31 @@ class DisqueAdminProvider implements ServiceProviderInterface, ControllerProvide
             ->method('POST|DELETE')
             ->bind('disque_admin_job_delete')
             ->assert('id', self::ID_REGEX);
+
+        // Middleware
+
+        $controllers->before(function (Request $request, Application $app) {
+            $prefix = $request->query->get('prefix', null);
+
+            if (!$prefix) {
+                return null;
+            }
+
+            $client = $app['disque_admin.client'];
+
+            $manager = $client->getConnectionManager();
+            if ($manager instanceof Manager) {
+                $manager->setPrefix($prefix);
+            }
+
+            // Connect once to get node information, second connect() will call our NodePrioritizer
+            $client->connect();
+        });
+
+        $controllers->before(function (Request $request, Application $app) {
+            $client = $app['disque_admin.client'];
+            $client->connect();
+        });
 
         $controllers->after(function (Request $request, Response $response) {
             $response->headers->addCacheControlDirective('private');

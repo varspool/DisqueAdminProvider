@@ -6,13 +6,13 @@
         <div class="col-md-4 push-md-8">
             <h4>Stats</h4>
 
-            {% include '@disque_admin/queue/_statTable.html.twig' with { 'stat': stat } %}
+            {% include '@disque_admin/queue/_statTable.html.twig' with { 'stat': stat, 'prefix': prefix } %}
         </div>
 
         <div class="col-md-8 pull-md-4">
             <h4>Jobs</h4>
 
-            {% include '@disque_admin/queue/_jobList.html.twig' with { 'jobs': jobs } %}
+            {% include '@disque_admin/queue/_jobList.html.twig' with { 'jobs': jobs, 'prefix': prefix } %}
         </div>
     </div>
 {% endblock %}

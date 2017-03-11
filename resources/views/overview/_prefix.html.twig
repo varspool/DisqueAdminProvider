@@ -1,0 +1,19 @@
+<span class="navbar-text mx-2">
+    <a class="text-white" href="#" data-toggle="collapse" data-target="#navbarToggleNodeSelection"
+       aria-controls="navbarToggleNodeSelection" aria-expanded="false" aria-label="Toggle node selection form">
+        {{ node.prefix }}
+        {% if not prefix %}
+            (random)
+        {% endif %}
+    </a>
+</span>
+
+<form class="form-inline collapse" id="navbarToggleNodeSelection">
+    <select class="form-control mr-sm-2" name="prefix">
+        <option value="" {{ not prefix ? 'selected' : '' }}>All (random)</option>
+        {% for sub in node.hello.nodes %}
+            <option value="{{ sub.id|slice(0,8) }}" {{ prefix == sub.id|slice(0,8) ? 'selected' : '' }}>{{ sub.id|slice(0,8) }} / {{ sub.host }}:{{ sub.port }}</option>
+        {% endfor %}
+    </select>
+    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Select</button>
+</form>

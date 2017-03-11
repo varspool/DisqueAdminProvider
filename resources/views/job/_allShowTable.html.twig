@@ -14,7 +14,7 @@
             {% for name in columns %}
                 {% if name == "id" %}
                     <th scope="row">
-                        <a href="{{ path('disque_admin_job_show', {'id': stat[name]}) }}">
+                        <a href="{{ path('disque_admin_job_show', {'id': stat[name], 'prefix': prefix}) }}">
                             {{ stat[name]  }}
                         </a>
                     </th>
