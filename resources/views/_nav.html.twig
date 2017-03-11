@@ -4,7 +4,10 @@
             aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
-    <a class="navbar-brand" href="#">Disque Admin</a>
+    <a class="navbar-brand" href="{{ path('disque_admin_overview_index') }}">
+        <img src="{{ app['disque_admin.mount_prefix'] }}/logo.svg" width="30" height="30" alt="" class="d-inline-block align-top">
+        Disque Admin
+    </a>
 
     <div class="collapse navbar-collapse" id="navbarMain">
         <ul class="navbar-nav mr-auto">
@@ -18,5 +21,9 @@
                 <a class="nav-link" href="{{ path('disque_admin_job_index') }}">Jobs</a>
             </li>
         </ul>
+
+        <span class="navbar-text">
+            {{ node.prefix }} / {{ node.credentials.host }}:{{ node.credentials.port }}
+        </span>
     </div>
 </nav>

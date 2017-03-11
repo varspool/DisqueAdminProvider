@@ -1,0 +1,28 @@
+<div class="row">
+    <div class="col-6 col-md4">
+        <h3>Nodes</h3>
+
+        <table class="table">
+            <thead class="thead-inverse">
+            <tr>
+                <th>ID</th>
+                <th>Host</th>
+                <th>Port</th>
+                <th>Priority</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for node in hello.nodes %}
+                <tr>
+                    <td>
+                        {{ node.id }}
+                    </td>
+                    <td>{{ node.host }}</td>
+                    <td>{{ node.port }}</td>
+                    <td>{{ node.priority }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
