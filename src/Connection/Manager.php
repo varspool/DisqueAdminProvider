@@ -32,4 +32,9 @@ class Manager extends BaseManager
 
         throw new \LogicException('Not implemented yet');
     }
+
+    public function getNodes()
+    {
+        return $this->nodes;
+    }
 }

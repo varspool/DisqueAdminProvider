@@ -50,6 +50,8 @@ class QueueController extends BaseController
     public function showAction(string $name, Request $request)
     {
         $stat = $this->disque->qstat($name);
+        unset($stat['pause']);
+
         $jobs = $this->disque->qpeek($name, 10);
 
         return $this->render('queue/show.html.twig', [
@@ -57,6 +59,15 @@ class QueueController extends BaseController
             'stat' => $this->formatObject($stat),
             'jobs' => $jobs,
             'prefix' => $request->attributes->get('prefix')
+        ]);
+    }
+
+    public function pauseComponent(?string $prefix, Request $request)
+    {
+        $states = [];
+
+        return $this->render('queue/_pause.html.twig', [
+            'prefix' => $prefix,
         ]);
     }
 
