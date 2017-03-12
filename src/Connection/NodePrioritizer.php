@@ -45,16 +45,16 @@ class NodePrioritizer implements NodePrioritizerInterface
 
     public function sort(array $nodes, $currentNodeId)
     {
-        if (!$this->prefix) {
+        if (!$this->prefix || $this->prefix === '*') {
             return $this->random->sort($nodes, $currentNodeId);
         }
 
-        if ($this->prefix === substr($currentNodeId, 0, 8)) {
+        if (strpos($currentNodeId, $this->prefix) === 0) {
             return $this->null->sort($nodes, $currentNodeId);
         }
 
         $filtered = array_filter($nodes, function ($id) {
-            return $this->prefix === substr($id, 0, 8);
+            return strpos($id, $this->prefix) === 0;
         }, ARRAY_FILTER_USE_KEY);
 
         if (empty($filtered)) {

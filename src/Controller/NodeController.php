@@ -14,16 +14,10 @@ class NodeController extends BaseController
         ]);
     }
 
-    public function showAction(string $id, ?string $prefix, Request $request)
+    public function showAction(?string $prefix, Request $request)
     {
         $info = $this->disque->info();
-
-        if ($prefix !== substr($id, 0, 8)) {
-            return $this->redirect($this->url->generate('disque_admin_node_show', [
-                'id' => $id,
-                'prefix' => substr($id, 0, 8)
-            ]), 302);
-        }
+        $id = $this->disque->getConnectionManager()->getCurrentNode()->getId();
 
         return $this->render('node/show.html.twig', [
             'prefix' => $prefix,

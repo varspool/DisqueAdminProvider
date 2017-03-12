@@ -43,7 +43,7 @@ class QueueController extends BaseController
         return $this->render('queue/index.html.twig', [
             'queues' => $queues,
             'columns' => $this->columns,
-            'prefix' => $request->query->get('prefix')
+            'prefix' => $request->attributes->get('prefix')
         ]);
     }
 
@@ -56,7 +56,7 @@ class QueueController extends BaseController
             'name' => $name,
             'stat' => $this->formatObject($stat),
             'jobs' => $jobs,
-            'prefix' => $request->query->get('prefix')
+            'prefix' => $request->attributes->get('prefix')
         ]);
     }
 

@@ -10,6 +10,8 @@ use RuntimeException;
 use Silex\Api\BootableProviderInterface;
 use Silex\Api\ControllerProviderInterface;
 use Silex\Application;
+use Silex\ControllerCollection;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Twig_Loader_Filesystem;
@@ -97,77 +99,48 @@ class DisqueAdminProvider implements ServiceProviderInterface, ControllerProvide
 
         // Overview
 
-        $controllers->get('/{prefix}/', 'disque_admin.controller.overview:indexAction')
-            ->bind('disque_admin_overview_index')
-            ->assert('prefix', self::PREFIX_REGEX)
-            ->value('prefix', '*')
-            ->convert('prefix', function ($v) { return $v === '*' ? null : $v; });
-
-        // Node
-
-        $controllers->get('/{prefix}/node', 'disque_admin.controller.node:indexAction')
-            ->bind('disque_admin_node_index');
-
-        $controllers->get('/{prefix}/{id}/node', 'disque_admin.controller.node:showAction')
-            ->bind('disque_admin_node_show')
-            ->value('prefix', '*')
-            ->convert('prefix', function ($v) { return $v === '*' ? null : $v; });
-
-        // Queue
-
-        $controllers->get('/{prefix}/queue', 'disque_admin.controller.queue:indexAction')
-            ->bind('disque_admin_queue_index');
-
-        $controllers->get('/queue/{name}', 'disque_admin.controller.queue:showAction')
-            ->bind('disque_admin_queue_show')
-            ->assert('name', '\S+');
-
-        // Job
-
-        $controllers->get('/{prefix}/job', 'disque_admin.controller.job:indexAction')
-            ->bind('disque_admin_job_index');
-
-        $controllers->get('/{prefix}/job/{id}', 'disque_admin.controller.job:showAction')
-            ->bind('disque_admin_job_show')
-            ->assert('prefix', self::PREFIX_REGEX)
-            ->assert('id', self::ID_REGEX);
-
-        $controllers->post('/job/{id}/enqueue', 'disque_admin.controller.job:enqueueAction')
-            ->bind('disque_admin_job_enqueue')
-            ->assert('id', self::ID_REGEX);
-
-        $controllers->post('/job/{id}/dequeue', 'disque_admin.controller.job:dequeueAction')
-            ->bind('disque_admin_job_dequeue')
-            ->assert('id', self::ID_REGEX);
-
-        $controllers->match('/job/{id}/delete', 'disque_admin.controller.job:deleteAction')
-            ->method('POST|DELETE')
-            ->bind('disque_admin_job_delete')
-            ->assert('id', self::ID_REGEX);
-
-        // Middleware
-
-        $controllers->before(function (Request $request, Application $app) {
-            $prefix = $request->query->get('prefix', null);
-
-            if (!$prefix) {
-                return null;
-            }
-
-            $client = $app['disque_admin.client'];
-
-            $manager = $client->getConnectionManager();
-            if ($manager instanceof Manager) {
-                $manager->setPrefix($prefix);
-            }
-
-            // Connect once to get node information, second connect() will call our NodePrioritizer
-            $client->connect();
+        $controllers->get('/', function (Application $app) {
+            $url = $app['url_generator']->generate('disque_admin_overview_index', ['prefix' => '*']);
+            return new RedirectResponse($url, 302);
         });
 
-        $controllers->before(function (Request $request, Application $app) {
-            $client = $app['disque_admin.client'];
-            $client->connect();
+        $controllers->mount('/{prefix}', function (ControllerCollection $prefix) {
+            $prefix->before([$this, 'processPrefix']);
+
+            $prefix->get('/', 'disque_admin.controller.overview:indexAction')
+                ->bind('disque_admin_overview_index');
+
+            $prefix->get('/node', 'disque_admin.controller.node:indexAction')
+                ->bind('disque_admin_node_index');
+
+            $prefix->get('/node/self', 'disque_admin.controller.node:showAction')
+                ->bind('disque_admin_node_show');
+
+            $prefix->get('/queue', 'disque_admin.controller.queue:indexAction')
+                ->bind('disque_admin_queue_index');
+
+            $prefix->get('/queue/{name}', 'disque_admin.controller.queue:showAction')
+                ->bind('disque_admin_queue_show');
+
+            $prefix->get('/job', 'disque_admin.controller.job:indexAction')
+                ->bind('disque_admin_job_index');
+
+            $prefix->get('/job/{id}', 'disque_admin.controller.job:showAction')
+                ->bind('disque_admin_job_show')
+                ->assert('id', self::ID_REGEX);
+
+            $prefix->post('/job/{id}/enqueue', 'disque_admin.controller.job:enqueueAction')
+                ->bind('disque_admin_job_enqueue')
+                ->assert('id', self::ID_REGEX);
+
+            $prefix->post('/job/{id}/dequeue', 'disque_admin.controller.job:dequeueAction')
+                ->bind('disque_admin_job_dequeue')
+                ->assert('id', self::ID_REGEX);
+
+            $prefix->match('/job/{id}/delete', 'disque_admin.controller.job:deleteAction')
+                ->method('POST|DELETE')
+                ->bind('disque_admin_job_delete')
+                ->assert('id', self::ID_REGEX);
         });
 
         $controllers->after(function (Request $request, Response $response) {
@@ -182,5 +155,34 @@ class DisqueAdminProvider implements ServiceProviderInterface, ControllerProvide
         if ($app['disque_admin.mount_prefix']) {
             $app->mount($app['disque_admin.mount_prefix'], $this);
         }
+    }
+
+    public function processPrefix(Request $request, Application $app)
+    {
+        $prefix = $request->attributes->get('prefix', '*');
+
+        if ($request->query->has('prefix') && $request->query->get('prefix') !== $prefix) {
+            $route = $request->attributes->get('_route');
+            $routeParams = array_merge($request->attributes->get('_routeParams', []), [
+                'prefix' => $request->query->get('prefix') ?: '*',
+            ]);
+
+            $url = $app['url_generator']->generate($route, $routeParams);
+            return new RedirectResponse($url, 302);
+        }
+
+        $client = $app['disque_admin.client'];
+
+        $manager = $client->getConnectionManager();
+
+        if ($manager instanceof Manager && $prefix) {
+            $manager->setPrefix($prefix);
+        }
+
+        // Connect once to get node information, second connect() will call our NodePrioritizer
+        $client->connect();
+        $client->connect();
+
+        return null;
     }
 }

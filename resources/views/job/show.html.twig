@@ -23,7 +23,7 @@
                 {% endif %}
             </div>
             <div class="btn-group mr-2" role="group" aria-label="Destructive options">
-                <form action="{{ path('disque_admin_job_delete', {'id': id}) }}" method="post">
+                <form action="{{ path('disque_admin_job_delete', {'id': id, prefix: prefix}) }}" method="post">
                     <button type="submit" class="btn btn-outline-danger">
                         <i class="fa fa-trash" aria-hidden="true"></i>
                         Delete Job

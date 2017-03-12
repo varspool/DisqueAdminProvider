@@ -11,7 +11,7 @@
     {% for node in hello.nodes %}
         <tr class="{{ hello.id == node.id ? 'table-success' : '' }}">
             <th scope="row">
-                <a href="{{ path('disque_admin_node_show', {id: node.id}) }}">
+                <a href="{{ path('disque_admin_node_show', {prefix: node.id}) }}">
                     {{ node.id }}
                 </a>
             </th>
