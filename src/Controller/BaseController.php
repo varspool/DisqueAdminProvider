@@ -8,6 +8,7 @@ use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
 use Silex\Application\TwigTrait;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Generator\UrlGenerator;
@@ -21,6 +22,11 @@ abstract class BaseController implements LoggerAwareInterface
     use TwigTrait;
 
     public const TWIG_NAMESPACE = 'disque_admin';
+
+    /**
+     * @var callable
+     */
+    protected $disqueFactory;
 
     /**
      * @var Client
@@ -37,9 +43,9 @@ abstract class BaseController implements LoggerAwareInterface
      */
     protected $url;
 
-    public function __construct(Client $disque, Twig_Environment $twig, UrlGenerator $url)
+    public function __construct(callable $disqueFactory, Twig_Environment $twig, UrlGenerator $url)
     {
-        $this->disque = $disque;
+        $this->disqueFactory = $disqueFactory;
         $this->twig = $twig;
         $this->url = $url;
         $this->logger = new NullLogger();
@@ -78,5 +84,21 @@ abstract class BaseController implements LoggerAwareInterface
     public function redirect(string $url, int $status = 301, array $headers = [])
     {
         return new RedirectResponse($url, $status, $headers);
+    }
+
+    /**
+     * @param Request $request
+     * @return Client
+     */
+    public function getDisque(Request $request): Client
+    {
+        if (!$this->disque) {
+            $factory = $this->disqueFactory;
+            $this->disque = $factory(
+                $request->attributes->get('prefix', null)
+            );
+        }
+
+        return $this->disque;
     }
 }

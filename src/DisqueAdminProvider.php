@@ -53,36 +53,58 @@ class DisqueAdminProvider implements ServiceProviderInterface, ControllerProvide
             ];
         };
 
-        $pimple['disque_admin.client'] = function (Application $app) {
-            $client = new Client($app['disque_admin.credentials']);
-            $client->setConnectionManager($app['disque_admin.connection_manager']);
-//            $client->connect();
+//        $pimple['disque_admin.client'] = function (Application $app) {
+//            $client = new Client($app['disque_admin.credentials']);
+//            $client->setConnectionManager($app['disque_admin.connection_manager']);
+////            $client->connect();
+//
+//            return $client;
+//        };
 
-            return $client;
-        };
+        $pimple['disque_admin.client_factory'] = $pimple->factory(function (Application $app): callable {
+            $credentials = $app['disque_admin.credentials'];
 
-        $pimple['disque_admin.connection_manager'] = function (Application $app) {
-            $manager = new Manager();
-            $manager->setPriorityStrategy(new NodePrioritizer());
-            return $manager;
-        };
+            return function (?string $prefix = null) use ($credentials): Client {
+                $client = new Client($credentials);
+
+                $manager = new Manager();
+                $manager->setPriorityStrategy(new NodePrioritizer());
+
+                if ($prefix) {
+                    $manager->setPrefix($prefix);
+                }
+
+                $client->setConnectionManager($manager);
+
+                $client->connect();
+                $client->connect();
+
+                return $client;
+            };
+        });
+
+//        $pimple['disque_admin.connection_manager'] = function (Application $app) {
+//            $manager = new Manager();
+//            $manager->setPriorityStrategy(new NodePrioritizer());
+//            return $manager;
+//        };
 
         // Controllers
 
         $pimple['disque_admin.controller.node'] = function (Application $app) {
-            return new NodeController($app['disque_admin.client'], $app['twig'], $app['url_generator']);
+            return new NodeController($app['disque_admin.client_factory'], $app['twig'], $app['url_generator']);
         };
 
         $pimple['disque_admin.controller.overview'] = function (Application $app) {
-            return new OverviewController($app['disque_admin.client'], $app['twig'], $app['url_generator']);
+            return new OverviewController($app['disque_admin.client_factory'], $app['twig'], $app['url_generator']);
         };
 
         $pimple['disque_admin.controller.queue'] = function (Application $app) {
-            return new QueueController($app['disque_admin.client'], $app['twig'], $app['url_generator']);
+            return new QueueController($app['disque_admin.client_factory'], $app['twig'], $app['url_generator']);
         };
 
         $pimple['disque_admin.controller.job'] = function (Application $app) {
-            return new JobController($app['disque_admin.client'], $app['twig'], $app['url_generator']);
+            return new JobController($app['disque_admin.client_factory'], $app['twig'], $app['url_generator']);
         };
 
         // Views
@@ -163,7 +185,7 @@ class DisqueAdminProvider implements ServiceProviderInterface, ControllerProvide
 
         if ($request->query->has('prefix') && $request->query->get('prefix') !== $prefix) {
             $route = $request->attributes->get('_route');
-            $routeParams = array_merge($request->attributes->get('_routeParams', []), [
+            $routeParams = array_merge($request->attributes->get('_route_params', []), [
                 'prefix' => $request->query->get('prefix') ?: '*',
             ]);
 
@@ -171,17 +193,17 @@ class DisqueAdminProvider implements ServiceProviderInterface, ControllerProvide
             return new RedirectResponse($url, 302);
         }
 
-        $client = $app['disque_admin.client'];
-
-        $manager = $client->getConnectionManager();
-
-        if ($manager instanceof Manager && $prefix) {
-            $manager->setPrefix($prefix);
-        }
-
-        // Connect once to get node information, second connect() will call our NodePrioritizer
-        $client->connect();
-        $client->connect();
+//        $client = $app['disque_admin.client'];
+//
+//        $manager = $client->getConnectionManager();
+//
+//        if ($manager instanceof Manager && $prefix) {
+//            $manager->setPrefix($prefix);
+//        }
+//
+//        // Connect once to get node information, second connect() will call our NodePrioritizer
+//        $client->connect();
+//        $client->connect();
 
         return null;
     }

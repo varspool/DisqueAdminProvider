@@ -16,7 +16,7 @@ class OverviewController extends BaseController
 
     public function nodesComponent(Request $request)
     {
-        $node = $this->disque->getConnectionManager()->getCurrentNode();
+        $node = $this->getDisque($request)->getConnectionManager()->getCurrentNode();
 
         /**
          * @var Node $node
@@ -31,7 +31,7 @@ class OverviewController extends BaseController
 
     public function navComponent(string $route, Request $request)
     {
-        $prefix = $this->disque->getConnectionManager()->getPrefix();
+        $prefix = $this->getDisque($request)->getConnectionManager()->getPrefix();
 
         return $this->render('overview/_nav.html.twig', [
             'route' => $route,
@@ -41,7 +41,7 @@ class OverviewController extends BaseController
 
     public function prefixComponent(?string $prefix, Request $request)
     {
-        $node = $this->disque->getConnectionManager()->getCurrentNode();
+        $node = $this->getDisque($request)->getConnectionManager()->getCurrentNode();
 
         return $this->render('overview/_prefix.html.twig', [
             'node' => $node,

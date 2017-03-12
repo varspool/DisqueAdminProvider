@@ -16,8 +16,10 @@ class NodeController extends BaseController
 
     public function showAction(?string $prefix, Request $request)
     {
-        $info = $this->disque->info();
-        $id = $this->disque->getConnectionManager()->getCurrentNode()->getId();
+        $client = $this->getDisque($request);
+
+        $info = $client->info();
+        $id = $client->getConnectionManager()->getCurrentNode()->getId();
 
         return $this->render('node/show.html.twig', [
             'prefix' => $prefix,
@@ -40,7 +42,8 @@ class NodeController extends BaseController
      */
     public function tableComponent(?string $prefix, Request $request)
     {
-        $node = $this->disque->getConnectionManager()->getCurrentNode();
+        $client = $this->getDisque($request);
+        $node = $client->getConnectionManager()->getCurrentNode();
 
         /**
          * @var Node $node

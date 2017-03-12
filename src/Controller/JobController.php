@@ -36,7 +36,7 @@ class JobController extends BaseController
 
     public function indexAction(Request $request)
     {
-        $response = $this->disque->jscan(0, [
+        $response = $this->getDisque($request)->jscan(0, [
             'count' => 10,
             'reply' => 'all',
         ]);
@@ -52,7 +52,7 @@ class JobController extends BaseController
 
     public function showAction(string $id, Request $request)
     {
-        $show = $this->disque->show($id);
+        $show = $this->getDisque($request)->show($id);
 
         if ($show) {
             $show = $this->formatObject($show);
@@ -79,7 +79,7 @@ class JobController extends BaseController
      */
     public function enqueueAction(string $id, Request $request)
     {
-        $this->disque->enqueue($id);
+        $this->getDisque($request)->enqueue($id);
         return $this->redirect($this->url->generate('disque_admin_job_show', ['id' => $id]));
     }
 
@@ -91,7 +91,7 @@ class JobController extends BaseController
      */
     public function dequeueAction(string $id, Request $request)
     {
-        $this->disque->dequeue($id);
+        $this->getDisque($request)->dequeue($id);
         return $this->redirect($this->url->generate('disque_admin_job_show', ['id' => $id]));
     }
 
@@ -103,7 +103,7 @@ class JobController extends BaseController
      */
     public function deleteAction(string $id, Request $request)
     {
-        $this->disque->delJob($id);
+        $this->getDisque($request)->delJob($id);
         return $this->redirect($this->url->generate('disque_admin_job_index'));
     }
 }

@@ -29,7 +29,9 @@ class QueueController extends BaseController
 
     public function indexAction(Request $request)
     {
-        $response = $this->disque->qscan(0, [
+        $client = $this->getDisque($request);
+
+        $response = $client->qscan(0, [
             'busyloop' => true,
             'minlen' => 1,
         ]);
@@ -37,7 +39,7 @@ class QueueController extends BaseController
         $queues = [];
 
         foreach ($response['queues'] as $queue) {
-            $queues[$queue] = $this->formatObject($this->disque->qstat($queue));
+            $queues[$queue] = $this->formatObject($client->qstat($queue));
         }
 
         return $this->render('queue/index.html.twig', [
@@ -49,10 +51,12 @@ class QueueController extends BaseController
 
     public function showAction(string $name, Request $request)
     {
-        $stat = $this->disque->qstat($name);
+        $client = $this->getDisque($request);
+
+        $stat = $client->qstat($name);
         unset($stat['pause']);
 
-        $jobs = $this->disque->qpeek($name, 10);
+        $jobs = $client->qpeek($name, 10);
 
         return $this->render('queue/show.html.twig', [
             'name' => $name,
@@ -73,7 +77,9 @@ class QueueController extends BaseController
 
     public function countsComponent(?string $prefix, Request $request)
     {
-        $response = $this->disque->qscan(0, [
+        $client = $this->getDisque($request);
+
+        $response = $client->qscan(0, [
             'busyloop' => true,
             'minlen' => 1,
         ]);
@@ -81,7 +87,7 @@ class QueueController extends BaseController
         $queues = [];
 
         foreach ($response['queues'] as $queue) {
-            $queues[$queue] = $this->disque->qlen($queue);
+            $queues[$queue] = $client->qlen($queue);
         }
 
         return $this->render('queue/_counts.html.twig', [
