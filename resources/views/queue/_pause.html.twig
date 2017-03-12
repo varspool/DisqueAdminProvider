@@ -1,9 +1,80 @@
-<table class="table">
+<table class="table table-center table-align-middle">
+    <thead class="thead-default">
+    <tr>
+        <th>Node</th>
+        <th>Input</th>
+        <th>Output</th>
+    </tr>
+    </thead>
     <tbody>
     {% for id, state in states %}
-        <tr class="{{ currentId == id ? 'table-active' : '' }}">
-            <th scope="row">{{ id }}</th>
-            <td>{{ state }}</td>
+        <tr>
+            <th scope="row" class="{{ currentId == id ? 'table-active' : '' }}">
+                {{ id | slice(0, 8) }}<br/>
+                {% if currentId == id %}
+                    <form action="{{ path('disque_admin_queue_pause', { type: 'bcast', prefix: prefix, name: name }) }}"
+                          method="post">
+                        <button class="btn btn-outline-warning m-1" type="submit">
+                            <i class="fa fa-globe mr-1"></i>
+                            Broadcast
+                        </button>
+                    </form>
+                {% endif %}
+            </th>
+            {% if state == 'in' or state == 'all' %}
+                <td class="table-danger">
+                    Paused<br/>
+                    {% if currentId == id %}
+                        <form action="{{ path('disque_admin_queue_unpause', { type: 'in', prefix: prefix, name: name }) }}"
+                              method="post">
+                            <button class="btn btn-outline-success m-1" type="submit">
+                                <i class="fa fa-play mr-1"></i>
+                                Resume
+                            </button>
+                        </form>
+                    {% endif %}
+                </td>
+            {% else %}
+                <td class="table-success">
+                    Working<br/>
+                    {% if currentId == id %}
+                        <form action="{{ path('disque_admin_queue_pause', { type: 'in', prefix: prefix, name: name }) }}"
+                              method="post">
+                            <button class="btn btn-outline-danger m-1" type="submit">
+                                <i class="fa fa-pause mr-1"></i>
+                                Pause
+                            </button>
+                        </form>
+                    {% endif %}
+                </td>
+            {% endif %}
+            {% if state == 'out' or state == 'all' %}
+                <td class="table-danger">
+                    Paused<br/>
+                    {% if currentId == id %}
+                        <form action="{{ path('disque_admin_queue_unpause', { type: 'out', prefix: prefix, name: name }) }}"
+                              method="post">
+                            <button class="btn btn-outline-success m-1" type="submit">
+                                <i class="fa fa-play mr-1"></i>
+                                Resume
+                            </button>
+                        </form>
+                    {% endif %}
+                </td>
+            {% else %}
+                <td class="table-success">
+                    Working<br/>
+                    {% if currentId == id %}
+                        <form action="{{ path('disque_admin_queue_pause', { type: 'out', prefix: prefix, name: name }) }}"
+                              method="post">
+                            <button class="btn btn-outline-danger m-1" type="submit">
+                                <i class="fa fa-pause mr-1"></i>
+                                Pause
+                            </button>
+                        </form>
+                    {% endif %}
+                </td>
+            {% endif %}
         </tr>
     {% endfor %}
     </tbody>

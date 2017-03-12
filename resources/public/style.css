@@ -2,3 +2,10 @@ body {
     padding-top: 5rem;
 }
 
+table.table-center td, table.table-center th {
+    text-align: center;
+}
+
+table.table-align-middle td, table.table-align-middle th {
+    vertical-align: middle;
+}

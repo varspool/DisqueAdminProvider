@@ -66,6 +66,38 @@ class QueueController extends BaseController
         ]);
     }
 
+    public function pauseAction(string $name, string $type, string $prefix, Request $request)
+    {
+        $client = $this->getDisque($request);
+
+        if ($type === 'bcast') {
+            $valueToSet = 'bcast';
+        } else {
+            $current = $client->pause($name, 'state');
+
+            if ($current === 'all') {
+                return $this->redirect($this->url->generate('disque_admin_queue_show', ['name' => $name, 'prefix' => $prefix]), 302);
+            } else {
+                $valueToSet = $current === 'none' ? $type : 'all';
+            }
+        }
+
+        $client->pause($name, $valueToSet);
+
+        return $this->redirect($this->url->generate('disque_admin_queue_show', ['name' => $name, 'prefix' => $prefix]), 302);
+    }
+
+    public function unpauseAction(string $name, string $type, string $prefix, Request $request)
+    {
+        $client = $this->getDisque($request);
+        $current = $client->pause($name, 'state');
+
+        $valueToSet = $current === $type ? 'none' : ($type === 'in' ? 'out' : 'in');
+        $client->pause($name, $valueToSet);
+
+        return $this->redirect($this->url->generate('disque_admin_queue_show', ['name' => $name, 'prefix' => $prefix]), 302);
+    }
+
     public function pauseComponent(string $name, ?string $prefix, Request $request)
     {
         $manager = $this->getDisque($request)->getConnectionManager();
@@ -85,6 +117,7 @@ class QueueController extends BaseController
             'prefix' => $prefix,
             'states' => $states,
             'currentId' => $currentId,
+            'name' => $name,
         ]);
     }
 

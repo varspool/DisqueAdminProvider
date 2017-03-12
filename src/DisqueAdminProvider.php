@@ -116,17 +116,31 @@ class DisqueAdminProvider implements ServiceProviderInterface, ControllerProvide
             $prefix->get('/', 'disque_admin.controller.overview:indexAction')
                 ->bind('disque_admin_overview_index');
 
+            // Nodes
+
             $prefix->get('/node', 'disque_admin.controller.node:indexAction')
                 ->bind('disque_admin_node_index');
 
             $prefix->get('/node/self', 'disque_admin.controller.node:showAction')
                 ->bind('disque_admin_node_show');
 
+            // Queue
+
             $prefix->get('/queue', 'disque_admin.controller.queue:indexAction')
                 ->bind('disque_admin_queue_index');
 
             $prefix->get('/queue/{name}', 'disque_admin.controller.queue:showAction')
                 ->bind('disque_admin_queue_show');
+
+            $prefix->post('/queue/{name}/pause/{type}', 'disque_admin.controller.queue:pauseAction')
+                ->bind('disque_admin_queue_pause')
+                ->assert('type', '(in|out|bcast)');
+
+            $prefix->post('/queue/{name}/unpause/{type}', 'disque_admin.controller.queue:unpauseAction')
+                ->bind('disque_admin_queue_unpause')
+                ->assert('type', '(in|out)');
+
+            // Job
 
             $prefix->get('/job', 'disque_admin.controller.job:indexAction')
                 ->bind('disque_admin_job_index');
