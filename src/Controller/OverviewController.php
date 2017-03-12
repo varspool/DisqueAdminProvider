@@ -31,11 +31,12 @@ class OverviewController extends BaseController
 
     public function navComponent(string $prefix, bool $random = false, string $route, Request $request)
     {
-        $n = substr($this->getDisque($request)->getConnectionManager()->getCurrentNode()->getId(), 0, 8);
-
-        if ($n !== $prefix && $prefix !== '*') {
-            throw new \RuntimeException('Invalid connection');
-        }
+        // Detect problems where prefix requested is not current connection
+        // $n = substr($this->getDisque($request)->getConnectionManager()->getCurrentNode()->getId(), 0, 8);
+        //
+        // if ($n !== $prefix && $prefix !== '*') {
+        //     throw new \RuntimeException('Invalid connection');
+        // }
 
         return $this->render('overview/_nav.html.twig', [
             'route' => $route,
