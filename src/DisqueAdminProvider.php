@@ -177,17 +177,13 @@ class DisqueAdminProvider implements ServiceProviderInterface, ControllerProvide
             return new RedirectResponse($url, 302);
         }
 
-//        $client = $app['disque_admin.client'];
-//
-//        $manager = $client->getConnectionManager();
-//
-//        if ($manager instanceof Manager && $prefix) {
-//            $manager->setPrefix($prefix);
-//        }
-//
-//        // Connect once to get node information, second connect() will call our NodePrioritizer
-//        $client->connect();
-//        $client->connect();
+        if ($prefix === '*') {
+            $client = ($app['disque_admin.client_factory'])(null);
+            $id = array_rand($client->getConnectionManager()->getNodes());
+            $prefix = substr($id, 0, 8);
+            $request->attributes->set('prefix', $prefix);
+            $request->attributes->set('random', true);
+        }
 
         return null;
     }

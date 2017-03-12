@@ -29,17 +29,22 @@ class OverviewController extends BaseController
         ]);
     }
 
-    public function navComponent(string $route, Request $request)
+    public function navComponent(string $prefix, bool $random = false, string $route, Request $request)
     {
-        $prefix = $this->getDisque($request)->getConnectionManager()->getPrefix();
+        $n = substr($this->getDisque($request)->getConnectionManager()->getCurrentNode()->getId(), 0, 8);
+
+        if ($n !== $prefix && $prefix !== '*') {
+            throw new \RuntimeException('Invalid connection');
+        }
 
         return $this->render('overview/_nav.html.twig', [
             'route' => $route,
             'prefix' => $prefix,
+            'random' => $random,
         ]);
     }
 
-    public function prefixComponent(?string $prefix, Request $request)
+    public function prefixComponent(?string $prefix, bool $random = false, Request $request)
     {
         $currentPrefix = $prefix;
         $manager = $this->getDisque($request)->getConnectionManager();
@@ -55,6 +60,7 @@ class OverviewController extends BaseController
             'prefix' => $prefix,
             'currentPrefix' => $currentPrefix,
             'nodes' => $nodes,
+            'random' => $request->attributes->get('random', false),
         ]);
     }
 }
