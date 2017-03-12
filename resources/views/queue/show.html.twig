@@ -1,18 +1,30 @@
 {% extends '@disque_admin/layout.html.twig' %}
 {% block content %}
-    <h2>Queue: <code>{{name}}</code></h2>
+    <h2>Queue: <code>{{ name }}</code></h2>
 
     <div class="row">
         <div class="col-md-4 push-md-8">
-            <h4>Stats</h4>
+            <section class="card mb-2">
+                <div class="card-block">
+                    <h4 class="card-title">Pause</h4>
 
-            {% include '@disque_admin/queue/_statTable.html.twig' with { 'stat': stat, 'prefix': prefix } %}
+                    {{ render(controller('disque_admin.controller.queue:pauseComponent', {prefix: prefix, name: name})) }}
+                </div>
+            </section>
+
+            <section class="card">
+                <div class="card-block">
+                    <h4 class="card-title">Stats</h4>
+
+                    {% include '@disque_admin/queue/_statTable.html.twig' with {stat: stat, prefix: prefix} %}
+                </div>
+            </section>
         </div>
 
         <div class="col-md-8 pull-md-4">
             <h4>Jobs</h4>
 
-            {% include '@disque_admin/queue/_jobList.html.twig' with { 'jobs': jobs, 'prefix': prefix } %}
+            {% include '@disque_admin/queue/_jobList.html.twig' with {jobs: jobs, prefix: prefix} %}
         </div>
     </div>
 {% endblock %}

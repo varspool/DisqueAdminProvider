@@ -10,7 +10,7 @@ class OverviewController extends BaseController
     public function indexAction(Request $request)
     {
         return $this->render('overview/index.html.twig', [
-            'prefix' => $request->get('prefix')
+            'prefix' => $request->get('prefix'),
         ]);
     }
 
@@ -25,7 +25,7 @@ class OverviewController extends BaseController
 
         return $this->render('overview/_nodes.html.twig', [
             'hello' => $hello,
-            'prefix' => $request->get('prefix')
+            'prefix' => $request->get('prefix'),
         ]);
     }
 
@@ -35,17 +35,26 @@ class OverviewController extends BaseController
 
         return $this->render('overview/_nav.html.twig', [
             'route' => $route,
-            'prefix' => $prefix
+            'prefix' => $prefix,
         ]);
     }
 
     public function prefixComponent(?string $prefix, Request $request)
     {
-        $node = $this->getDisque($request)->getConnectionManager()->getCurrentNode();
+        $currentPrefix = $prefix;
+        $manager = $this->getDisque($request)->getConnectionManager();
+
+        if ($prefix === null || $prefix === '*') {
+            $currentId = $manager->getCurrentNode()->getId();
+            $currentPrefix = substr($currentId, 0, 8);
+        }
+
+        $nodes = $manager->getNodes();
 
         return $this->render('overview/_prefix.html.twig', [
-            'node' => $node,
-            'prefix' => $prefix
+            'prefix' => $prefix,
+            'currentPrefix' => $currentPrefix,
+            'nodes' => $nodes,
         ]);
     }
 }

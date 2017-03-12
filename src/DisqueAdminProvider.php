@@ -2,7 +2,6 @@
 
 namespace Varspool\DisqueAdmin;
 
-use Disque\Client;
 use Disque\Connection\Credentials;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
@@ -26,7 +25,6 @@ use Varspool\DisqueAdmin\Controller\QueueController;
 class DisqueAdminProvider implements ServiceProviderInterface, ControllerProviderInterface, BootableProviderInterface
 {
     public const ID_REGEX = 'D-\S+';
-    private const PREFIX_REGEX = '^(\*|[0-9a-f]{8})$';
 
     public function register(Container $pimple)
     {
@@ -53,14 +51,6 @@ class DisqueAdminProvider implements ServiceProviderInterface, ControllerProvide
             ];
         };
 
-//        $pimple['disque_admin.client'] = function (Application $app) {
-//            $client = new Client($app['disque_admin.credentials']);
-//            $client->setConnectionManager($app['disque_admin.connection_manager']);
-////            $client->connect();
-//
-//            return $client;
-//        };
-
         $pimple['disque_admin.client_factory'] = $pimple->factory(function (Application $app): callable {
             $credentials = $app['disque_admin.credentials'];
 
@@ -82,12 +72,6 @@ class DisqueAdminProvider implements ServiceProviderInterface, ControllerProvide
                 return $client;
             };
         });
-
-//        $pimple['disque_admin.connection_manager'] = function (Application $app) {
-//            $manager = new Manager();
-//            $manager->setPriorityStrategy(new NodePrioritizer());
-//            return $manager;
-//        };
 
         // Controllers
 

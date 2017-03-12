@@ -1,0 +1,10 @@
+<table class="table">
+    <tbody>
+    {% for id, state in states %}
+        <tr class="{{ currentId == id ? 'table-active' : '' }}">
+            <th scope="row">{{ id }}</th>
+            <td>{{ state }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

@@ -66,12 +66,25 @@ class QueueController extends BaseController
         ]);
     }
 
-    public function pauseComponent(?string $prefix, Request $request)
+    public function pauseComponent(string $name, ?string $prefix, Request $request)
     {
+        $manager = $this->getDisque($request)->getConnectionManager();
+
+        $nodes = $manager->getNodes();
+        $currentId = $manager->getCurrentNode()->getId();
+
         $states = [];
+
+        foreach ($nodes as $id => $node) {
+            $client = ($this->disqueFactory)($id);
+            $stat = $client->qstat($name);
+            $states[$id] = $stat['pause'];
+        }
 
         return $this->render('queue/_pause.html.twig', [
             'prefix' => $prefix,
+            'states' => $states,
+            'currentId' => $currentId,
         ]);
     }
 

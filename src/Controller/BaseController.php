@@ -2,7 +2,6 @@
 
 namespace Varspool\DisqueAdmin\Controller;
 
-use Disque\Client;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
@@ -13,6 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Generator\UrlGenerator;
 use Twig_Environment;
+use Varspool\DisqueAdmin\Client;
 use Varspool\DisqueAdmin\FormatTrait;
 
 abstract class BaseController implements LoggerAwareInterface
