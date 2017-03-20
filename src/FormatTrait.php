@@ -38,8 +38,12 @@ trait FormatTrait
         return $seconds . ' seconds';
     }
 
-    public function formatIntervalMillis(string $milliseconds): string
+    public function formatIntervalMillis(?string $milliseconds = ''): string
     {
+        if (!$milliseconds) {
+            return '-';
+        }
+
         return $this->formatIntervalSeconds((int)$milliseconds / 1000);
     }
 
