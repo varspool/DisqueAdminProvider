@@ -5,6 +5,7 @@ namespace Varspool\DisqueAdmin;
 use Disque\Connection\Credentials;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
+use Predisque\Client;
 use RuntimeException;
 use Silex\Api\BootableProviderInterface;
 use Silex\Api\ControllerProviderInterface;
@@ -14,8 +15,6 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Twig_Loader_Filesystem;
-use Varspool\DisqueAdmin\Connection\Manager;
-use Varspool\DisqueAdmin\Connection\NodePrioritizer;
 use Varspool\DisqueAdmin\Controller\BaseController;
 use Varspool\DisqueAdmin\Controller\JobController;
 use Varspool\DisqueAdmin\Controller\NodeController;
@@ -55,19 +54,14 @@ class DisqueAdminProvider implements ServiceProviderInterface, ControllerProvide
             $credentials = $app['disque_admin.credentials'];
 
             return function (?string $prefix = null) use ($credentials): Client {
-                $client = new Client($credentials);
+                $parameters = [];
+                $options = [];
 
-                $manager = new Manager();
-                $manager->setPriorityStrategy(new NodePrioritizer());
+                $client = new Client($parameters, $options);
 
                 if ($prefix) {
-                    $manager->setPrefix($prefix);
+                    throw new \LogicException('Unimplemented');
                 }
-
-                $client->setConnectionManager($manager);
-
-                $client->connect();
-                $client->connect();
 
                 return $client;
             };
