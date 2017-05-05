@@ -4,65 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "0e1c7a62d402a74815b93a486ef6e702",
+    "content-hash": "83ad365eac2bd2a2059d169a7662871f",
     "packages": [
-        {
-            "name": "mariano/disque-php",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/dominics/disque-php.git",
-                "reference": "607407f1a4507803500dce4740727224b54e8ec1"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/dominics/disque-php/zipball/607407f1a4507803500dce4740727224b54e8ec1",
-                "reference": "607407f1a4507803500dce4740727224b54e8ec1",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.5"
-            },
-            "require-dev": {
-                "mockery/mockery": "0.9.*",
-                "phpunit/phpunit": "~4.6",
-                "scrutinizer/ocular": "~1.1"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Disque\\": "src/"
-                }
-            },
-            "autoload-dev": {
-                "psr-4": {
-                    "Disque\\Test\\": "tests/"
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Mariano Iglesias",
-                    "email": "mgiglesias@gmail.com",
-                    "homepage": "http://marianoiglesias.com.ar"
-                }
-            ],
-            "description": "PHP library for Disque, an in-memory, distributed job queue",
-            "homepage": "https://github.com/mariano/disque-php",
-            "keywords": [
-                "disque",
-                "job",
-                "queue"
-            ],
-            "support": {
-                "email": "mgiglesias@gmail.com",
-                "issues": "https://github.com/mariano/disque-php/issues",
-                "source": "https://github.com/mariano/disque-php"
-            },
-            "time": "2017-03-20 05:31:04"
-        },
         {
             "name": "pimple/pimple",
             "version": "v3.0.2",
@@ -828,12 +771,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/dominics/predisque.git",
-                "reference": "dd666bdb1c12631ce3846edfe89139fac8609856"
+                "reference": "c4255d3ea1ff0da18d176dcd0e4a523d4403ae16"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dominics/predisque/zipball/dd666bdb1c12631ce3846edfe89139fac8609856",
-                "reference": "dd666bdb1c12631ce3846edfe89139fac8609856",
+                "url": "https://api.github.com/repos/dominics/predisque/zipball/c4255d3ea1ff0da18d176dcd0e4a523d4403ae16",
+                "reference": "c4255d3ea1ff0da18d176dcd0e4a523d4403ae16",
                 "shasum": ""
             },
             "require": {
@@ -843,7 +786,7 @@
             "require-dev": {
                 "phpunit/php-invoker": "^1.1",
                 "phpunit/phpunit": "~6.1",
-                "squizlabs/php_codesniffer": "~2.8"
+                "squizlabs/php_codesniffer": "~3.0"
             },
             "type": "library",
             "extra": {
@@ -867,7 +810,7 @@
                 }
             ],
             "description": "Disque client based on Predis",
-            "time": "2017-05-05 11:44:57"
+            "time": "2017-05-05 12:31:33"
         }
     ],
     "packages-dev": [
@@ -2353,12 +2296,6 @@
     ],
     "aliases": [
         {
-            "alias": "3.0.x-dev",
-            "alias_normalized": "3.0.9999999.9999999-dev",
-            "version": "9999999-dev",
-            "package": "mariano/disque-php"
-        },
-        {
             "alias": "0.0.x-dev",
             "alias_normalized": "0.0.9999999.9999999-dev",
             "version": "9999999-dev",
@@ -2367,7 +2304,6 @@
     ],
     "minimum-stability": "stable",
     "stability-flags": {
-        "mariano/disque-php": 20,
         "varspool/predisque": 20
     },
     "prefer-stable": false,

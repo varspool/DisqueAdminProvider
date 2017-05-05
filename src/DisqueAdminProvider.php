@@ -59,7 +59,7 @@ class DisqueAdminProvider implements ServiceProviderInterface, ControllerProvide
 
                 $client = new Client($parameters, $options);
 
-                if ($prefix) {
+                if ($prefix !== '*') {
                     throw new \LogicException('Unimplemented');
                 }
 
@@ -183,14 +183,6 @@ class DisqueAdminProvider implements ServiceProviderInterface, ControllerProvide
 
             $url = $app['url_generator']->generate($route, $routeParams);
             return new RedirectResponse($url, 302);
-        }
-
-        if ($prefix === '*') {
-            $client = ($app['disque_admin.client_factory'])(null);
-            $id = array_rand($client->getConnectionManager()->getNodes());
-            $prefix = substr($id, 0, 8);
-            $request->attributes->set('prefix', $prefix);
-            $request->attributes->set('random', true);
         }
 
         return null;

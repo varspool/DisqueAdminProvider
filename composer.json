@@ -4,7 +4,6 @@
     "type": "library",
     "require": {
         "silex/silex": "~2.0",
-        "mariano/disque-php": "dev-master as 3.0.x-dev",
         "varspool/predisque": "dev-master as 0.0.x-dev",
         "symfony/twig-bridge": "*",
         "psr/log": "~1.0"
