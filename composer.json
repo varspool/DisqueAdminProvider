@@ -3,17 +3,19 @@
     "description": "Web-based Disque administration and monitoring tool, using Silex",
     "type": "library",
     "require": {
-        "silex/silex": "~2.0",
+        "silex/silex": ">=2.0,<3.0",
         "varspool/predisque": "dev-master as 0.0.x-dev",
         "symfony/twig-bridge": "*",
         "psr/log": "~1.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^5.7",
+        "phpunit/phpunit": "~6.1",
         "symfony/debug": "~3.2.4",
         "symfony/browser-kit": "~3.2.4",
         "symfony/twig-bridge": "~3.2.4",
-        "symfony/css-selector": "^3.2"
+        "symfony/css-selector": "^3.2",
+        "phpunit/php-invoker": "^1.1",
+        "squizlabs/php_codesniffer": "~3.0"
     },
     "license": "MIT",
     "authors": [
@@ -25,6 +27,11 @@
     "autoload": {
         "psr-4": {
             "Varspool\\DisqueAdmin\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Varspool\\DisqueAdmin\\": "tests/"
         }
     },
     "extra": {
