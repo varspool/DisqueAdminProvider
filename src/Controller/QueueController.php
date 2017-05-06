@@ -45,7 +45,6 @@ class QueueController extends BaseController
         return $this->render('queue/index.html.twig', [
             'queues' => $queues,
             'columns' => $this->columns,
-            'prefix' => $request->attributes->get('prefix')
         ]);
     }
 
@@ -62,11 +61,10 @@ class QueueController extends BaseController
             'name' => $name,
             'stat' => $this->formatObject($stat),
             'jobs' => $jobs,
-            'prefix' => $request->attributes->get('prefix')
         ]);
     }
 
-    public function pauseAction(string $name, string $type, string $prefix, Request $request)
+    public function pauseAction(string $name, string $type, Request $request)
     {
         $client = $this->getDisque($request);
 
@@ -98,9 +96,12 @@ class QueueController extends BaseController
         return $this->redirect($this->url->generate('disque_admin_queue_show', ['name' => $name, 'prefix' => $prefix]), 302);
     }
 
-    public function pauseComponent(string $name, ?string $prefix, Request $request)
+    public function pauseComponent(Request $request)
     {
-        $manager = $this->getDisque($request)->getConnectionManager();
+        /**
+         * @var
+         */
+        $cluster = $this->getDisque($request)->getConnection();
 
         $nodes = $manager->getNodes();
         $currentId = $manager->getCurrentNode()->getId();
@@ -114,14 +115,13 @@ class QueueController extends BaseController
         }
 
         return $this->render('queue/_pause.html.twig', [
-            'prefix' => $prefix,
             'states' => $states,
             'currentId' => $currentId,
             'name' => $name,
         ]);
     }
 
-    public function countsComponent(?string $prefix, Request $request)
+    public function countsComponent(Request $request)
     {
         $client = $this->getDisque($request);
 

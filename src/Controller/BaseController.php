@@ -2,9 +2,14 @@
 
 namespace Varspool\DisqueAdmin\Controller;
 
+use Predisque\Client as PredisqueClient;
+use Predisque\Client;
+use Predisque\Connection\Aggregate\ClusterInterface;
+use Predisque\Connection\Aggregate\DisqueCluster;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
+use RuntimeException;
 use Silex\Application\TwigTrait;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -12,7 +17,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Generator\UrlGenerator;
 use Twig_Environment;
-use Varspool\DisqueAdmin\Client;
 use Varspool\DisqueAdmin\FormatTrait;
 
 abstract class BaseController implements LoggerAwareInterface
@@ -88,17 +92,37 @@ abstract class BaseController implements LoggerAwareInterface
 
     /**
      * @param Request $request
-     * @return Client
+     * @return PredisqueClient
      */
-    public function getDisque(Request $request): Client
+    public function getDisque(Request $request): PredisqueClient
     {
         if (!$this->disque) {
             $factory = $this->disqueFactory;
+
             $this->disque = $factory(
                 $request->attributes->get('prefix', null)
             );
+
+            if (!$this->disque->getConnection() instanceof DisqueCluster) {
+                throw new \RuntimeException('Expected to have a disque cluster connection');
+            }
         }
 
         return $this->disque;
+    }
+
+    /**
+     * @param Request $request
+     * @return ClusterInterface
+     */
+    public function getDisqueConnection(Request $request): ClusterInterface
+    {
+        $connection = $this->getDisque($request)->getConnection();
+
+        if (!$connection instanceof ClusterInterface) {
+            throw new RuntimeException('Expected a ' . ClusterInterface::class . ' connection');
+        }
+
+        return $connection;
     }
 }

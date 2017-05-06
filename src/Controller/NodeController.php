@@ -10,19 +10,17 @@ class NodeController extends BaseController
     public function indexAction(Request $request)
     {
         return $this->render('node/index.html.twig', [
-            'prefix' => $request->query->get('prefix')
         ]);
     }
 
-    public function showAction(?string $prefix, Request $request)
+    public function showAction(Request $request)
     {
         $client = $this->getDisque($request);
 
         $info = $client->info();
-        $id = $client->getConnectionManager()->getCurrentNode()->getId();
+        $id = $client->getConnection()->getCurrentNodeId();
 
         return $this->render('node/show.html.twig', [
-            'prefix' => $prefix,
             'info' => $info,
             'id' => $id,
         ]);
@@ -40,10 +38,10 @@ class NodeController extends BaseController
      * @throws \Twig_Error_Runtime
      * @throws \Twig_Error_Syntax
      */
-    public function tableComponent(?string $prefix, Request $request)
+    public function tableComponent(Request $request)
     {
         $client = $this->getDisque($request);
-        $node = $client->getConnectionManager()->getCurrentNode();
+        $node = $client->getConnection()->getCurrentNode();
 
         /**
          * @var Node $node
@@ -52,7 +50,6 @@ class NodeController extends BaseController
 
         return $this->render('node/_table.html.twig', [
             'hello' => $hello,
-            'prefix' => $prefix
         ]);
     }
 

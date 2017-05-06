@@ -32,39 +32,15 @@ class DisqueAdminProvider implements ServiceProviderInterface, ControllerProvide
         }
 
         $pimple['disque_admin.mount_prefix'] = '/';
-        $pimple['disque_admin.host'] = '127.0.0.1';
-        $pimple['disque_admin.port'] = 7711;
-        $pimple['disque_admin.password'] = null;
-        $pimple['disque_admin.connect_timeout'] = 5;
-        $pimple['disque_admin.timeout'] = 5;
+        $pimple['disque_admin.connection'] = ['tcp://127.0.0.1:7711'];
+        $pimple['disque_admin.options'] = [];
 
-        $pimple['disque_admin.credentials'] = function (Application $app): array {
-            return [
-                new Credentials(
-                    $app['disque_admin.host'],
-                    $app['disque_admin.port'],
-                    $app['disque_admin.password'],
-                    $app['disque_admin.connect_timeout'],
-                    $app['disque_admin.timeout']
-                ),
-            ];
+        $pimple['disque_admin.client'] = function (Application $app) {
+            return $app['disque_admin.client_factory'];
         };
-
-        $pimple['disque_admin.client_factory'] = $pimple->factory(function (Application $app): callable {
-            $credentials = $app['disque_admin.credentials'];
-
-            return function (?string $prefix = null) use ($credentials): Client {
-                $parameters = [];
-                $options = [];
-
-                $client = new Client($parameters, $options);
-
-                if ($prefix !== '*') {
-                    throw new \LogicException('Unimplemented');
-                }
-
-                return $client;
-            };
+        
+        $pimple['disque_admin.client_factory'] = $pimple->factory(function (Application $app) {
+            return new Client($app['disque_admin.connection'], $app['disque_admin.options']);
         });
 
         // Controllers
@@ -100,58 +76,58 @@ class DisqueAdminProvider implements ServiceProviderInterface, ControllerProvide
         // Overview
 
         $controllers->get('/', function (Application $app) {
-            $url = $app['url_generator']->generate('disque_admin_overview_index', ['prefix' => '*']);
+            $url = $app['url_generator']->generate('disque_admin_overview_index');
             return new RedirectResponse($url, 302);
         });
 
-        $controllers->mount('/{prefix}', function (ControllerCollection $prefix) {
-            $prefix->before([$this, 'processPrefix']);
+        $controllers->mount('/', function (ControllerCollection $root) {
+            // $prefix->before([$this, 'processPrefix']);
 
-            $prefix->get('/', 'disque_admin.controller.overview:indexAction')
+            $root->get('/', 'disque_admin.controller.overview:indexAction')
                 ->bind('disque_admin_overview_index');
 
             // Nodes
 
-            $prefix->get('/node', 'disque_admin.controller.node:indexAction')
+            $root->get('/node', 'disque_admin.controller.node:indexAction')
                 ->bind('disque_admin_node_index');
 
-            $prefix->get('/node/self', 'disque_admin.controller.node:showAction')
+            $root->get('/node/self', 'disque_admin.controller.node:showAction')
                 ->bind('disque_admin_node_show');
 
             // Queue
 
-            $prefix->get('/queue', 'disque_admin.controller.queue:indexAction')
+            $root->get('/queue', 'disque_admin.controller.queue:indexAction')
                 ->bind('disque_admin_queue_index');
 
-            $prefix->get('/queue/{name}', 'disque_admin.controller.queue:showAction')
+            $root->get('/queue/{name}', 'disque_admin.controller.queue:showAction')
                 ->bind('disque_admin_queue_show');
 
-            $prefix->post('/queue/{name}/pause/{type}', 'disque_admin.controller.queue:pauseAction')
+            $root->post('/queue/{name}/pause/{type}', 'disque_admin.controller.queue:pauseAction')
                 ->bind('disque_admin_queue_pause')
                 ->assert('type', '(in|out|bcast)');
 
-            $prefix->post('/queue/{name}/unpause/{type}', 'disque_admin.controller.queue:unpauseAction')
+            $root->post('/queue/{name}/unpause/{type}', 'disque_admin.controller.queue:unpauseAction')
                 ->bind('disque_admin_queue_unpause')
                 ->assert('type', '(in|out)');
 
             // Job
 
-            $prefix->get('/job', 'disque_admin.controller.job:indexAction')
+            $root->get('/job', 'disque_admin.controller.job:indexAction')
                 ->bind('disque_admin_job_index');
 
-            $prefix->get('/job/{id}', 'disque_admin.controller.job:showAction')
+            $root->get('/job/{id}', 'disque_admin.controller.job:showAction')
                 ->bind('disque_admin_job_show')
                 ->assert('id', self::ID_REGEX);
 
-            $prefix->post('/job/{id}/enqueue', 'disque_admin.controller.job:enqueueAction')
+            $root->post('/job/{id}/enqueue', 'disque_admin.controller.job:enqueueAction')
                 ->bind('disque_admin_job_enqueue')
                 ->assert('id', self::ID_REGEX);
 
-            $prefix->post('/job/{id}/dequeue', 'disque_admin.controller.job:dequeueAction')
+            $root->post('/job/{id}/dequeue', 'disque_admin.controller.job:dequeueAction')
                 ->bind('disque_admin_job_dequeue')
                 ->assert('id', self::ID_REGEX);
 
-            $prefix->match('/job/{id}/delete', 'disque_admin.controller.job:deleteAction')
+            $root->match('/job/{id}/delete', 'disque_admin.controller.job:deleteAction')
                 ->method('POST|DELETE')
                 ->bind('disque_admin_job_delete')
                 ->assert('id', self::ID_REGEX);
@@ -171,20 +147,20 @@ class DisqueAdminProvider implements ServiceProviderInterface, ControllerProvide
         }
     }
 
-    public function processPrefix(Request $request, Application $app)
-    {
-        $prefix = $request->attributes->get('prefix', '*');
-
-        if ($request->query->has('prefix') && $request->query->get('prefix') !== $prefix) {
-            $route = $request->attributes->get('_route');
-            $routeParams = array_merge($request->attributes->get('_route_params', []), [
-                'prefix' => $request->query->get('prefix') ?: '*',
-            ]);
-
-            $url = $app['url_generator']->generate($route, $routeParams);
-            return new RedirectResponse($url, 302);
-        }
-
-        return null;
-    }
+    // public function processPrefix(Request $request, Application $app)
+    // {
+    //     $prefix = $request->attributes->get('prefix', '*');
+    //
+    //     if ($request->query->has('prefix') && $request->query->get('prefix') !== $prefix) {
+    //         $route = $request->attributes->get('_route');
+    //         $routeParams = array_merge($request->attributes->get('_route_params', []), [
+    //             'prefix' => $request->query->get('prefix') ?: '*',
+    //         ]);
+    //
+    //         $url = $app['url_generator']->generate($route, $routeParams);
+    //         return new RedirectResponse($url, 302);
+    //     }
+    //
+    //     return null;
+    // }
 }
