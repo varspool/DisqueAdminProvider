@@ -1,22 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- http://www.phpunit.de/manual/current/en/appendixes.configuration.html -->
 <phpunit
         backupGlobals="false"
         backupStaticAttributes="false"
+        beStrictAboutTestSize="true"
+        beStrictAboutTestsThatDoNotTestAnything="true"
         colors="true"
         convertErrorsToExceptions="true"
         convertNoticesToExceptions="true"
         convertWarningsToExceptions="true"
         processIsolation="false"
+        stopOnError="false"
         stopOnFailure="false"
+        stopOnIncomplete="false"
+        stopOnRisky="false"
+        stopOnSkipped="false"
         syntaxCheck="false"
-        bootstrap="test/bootstrap.php">
-
+        bootstrap="vendor/autoload.php"
+        verbose="true"
+>
     <testsuites>
-        <testsuite name="Test Suite">
-            <directory>src/</directory>
-            <directory>test/</directory>
+        <testsuite name="DisqueAdminProvider Test Suite">
+            <directory>tests/</directory>
         </testsuite>
     </testsuites>
+
+    <filter>
+        <whitelist>
+            <directory suffix=".php">src/</directory>
+        </whitelist>
+    </filter>
+
+    <php>
+        <!-- Disque -->
+        <const name="DISQUE_SERVER_VERSION" value="1.0" />
+        <const name="DISQUE_SERVER_HOST" value="127.0.0.1" />
+        <const name="DISQUE_SERVER_PORT" value="7711" />
+    </php>
 </phpunit>
