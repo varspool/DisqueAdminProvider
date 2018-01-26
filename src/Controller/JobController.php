@@ -104,6 +104,8 @@ class JobController extends BaseController
     public function deleteAction(string $id, Request $request)
     {
         $this->getDisque($request)->delJob($id);
-        return $this->redirect($this->url->generate('disque_admin_job_index'));
+        return $this->redirect($this->url->generate('disque_admin_job_index', [
+            'prefix' => $request->attributes->get('prefix')
+        ]));
     }
 }
